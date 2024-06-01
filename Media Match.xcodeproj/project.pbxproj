@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		066B56172C0B9018000F554C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 066B56162C0B9018000F554C /* Launch Screen.storyboard */; };
 		06AB7F6E2C0B37C100459A9E /* Media_MatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AB7F6D2C0B37C100459A9E /* Media_MatchApp.swift */; };
 		06AB7F702C0B37C100459A9E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AB7F6F2C0B37C100459A9E /* ContentView.swift */; };
 		06AB7F722C0B37C100459A9E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06AB7F712C0B37C100459A9E /* Assets.xcassets */; };
@@ -49,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		066B56162C0B9018000F554C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		06AB7F6A2C0B37C100459A9E /* Media Match.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Media Match.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		06AB7F6D2C0B37C100459A9E /* Media_MatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media_MatchApp.swift; sourceTree = "<group>"; };
 		06AB7F6F2C0B37C100459A9E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 		06AB7F612C0B37C100459A9E = {
 			isa = PBXGroup;
 			children = (
+				066B56162C0B9018000F554C /* Launch Screen.storyboard */,
 				06AB7F6C2C0B37C100459A9E /* Media Match */,
 				06AB7F7D2C0B37C200459A9E /* Media MatchTests */,
 				06AB7F872C0B37C200459A9E /* Media MatchUITests */,
@@ -292,6 +295,7 @@
 			files = (
 				06AB7F752C0B37C100459A9E /* Preview Assets.xcassets in Resources */,
 				06AB7F722C0B37C100459A9E /* Assets.xcassets in Resources */,
+				066B56172C0B9018000F554C /* Launch Screen.storyboard in Resources */,
 				06AB7F982C0B385A00459A9E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

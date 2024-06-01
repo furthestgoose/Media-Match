@@ -38,7 +38,7 @@ struct LoginView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 300)
                     }
-                    .padding(.top, 100)
+                    .padding(.top, 20)
                     
                     Text("OR")
                         .padding()
