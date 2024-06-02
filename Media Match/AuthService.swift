@@ -4,6 +4,8 @@ import FirebaseAuth
 import CryptoKit
 import AuthenticationServices
 import GoogleSignIn
+import FirebaseFirestore
+import FirebaseStorage
 
 
 class AuthService: ObservableObject {
@@ -22,19 +24,22 @@ class AuthService: ObservableObject {
     }
     
     // MARK: - Password Account
-    func regularCreateAccount(email: String, password: String, completion: @escaping (Error?) -> Void) {
+    func regularCreateAccount(email: String, password: String,username: String, completion: @escaping (Error?) -> Void) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("userProfiles")
+        
         
         guard isValidEmail(email) else {
-                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid email address."])
-                    completion(error)
-                    return
-                }
+            let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid email address."])
+            completion(error)
+            return
+        }
         
         // Check if the password is at least 12 characters long
         guard password.count >= 6 else {
             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password must be at least 6 characters long."])
-                        completion(error)
-                        return
+            completion(error)
+            return
         }
         
         // Check if the password contains at least one uppercase letter
@@ -42,8 +47,8 @@ class AuthService: ObservableObject {
         let uppercaseLetterTest = NSPredicate(format: "SELF MATCHES %@", uppercaseLetterRegex)
         guard uppercaseLetterTest.evaluate(with: password) else {
             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password must contain at least one uppercase letter."])
-                        completion(error)
-                        return
+            completion(error)
+            return
         }
         
         // Check if the password contains at least one number
@@ -51,8 +56,8 @@ class AuthService: ObservableObject {
         let numberTest = NSPredicate(format: "SELF MATCHES %@", numberRegex)
         guard numberTest.evaluate(with: password) else {
             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password must contain at least one number."])
-                        completion(error)
-                        return
+            completion(error)
+            return
         }
         
         // Check if the password contains at least one special character
@@ -60,27 +65,62 @@ class AuthService: ObservableObject {
         let specialCharacterTest = NSPredicate(format: "SELF MATCHES %@", specialCharacterRegex)
         guard specialCharacterTest.evaluate(with: password) else {
             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password must contain at least one special character."])
-                        completion(error)
-                        return
+            completion(error)
+            return
         }
         
-        // Proceed with account creation if the password is valid
-        Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
-            if let error = error as NSError? {
-                // Check the error code and handle it accordingly
-                switch error.code {
-                case AuthErrorCode.emailAlreadyInUse.rawValue:
-                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "email already in use."])
-                                completion(error)
-                    print("email in use")
-                                return
-                default:
-                    print("Error: \(error.localizedDescription)")
-                }
+        userRef.whereField("username", isEqualTo: username).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error checking username: \(error.localizedDescription)")
+                completion(error)
                 return
             }
-            // Handle successful sign in
-            print("Sign in successful!")
+            
+            if let querySnapshot = querySnapshot, !querySnapshot.isEmpty {
+                let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Username already in use."])
+                completion(error)
+                return
+            }
+            
+            guard username.count >= 6 else{
+                let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Username must be at least 6 characters long"])
+                completion(error)
+                return
+            }
+            
+            Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
+                if let error = error as NSError? {
+                    // Check the error code and handle it accordingly
+                    switch error.code {
+                    case AuthErrorCode.emailAlreadyInUse.rawValue:
+                        let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "email already in use."])
+                        completion(error)
+                        print("email in use")
+                        return
+                    default:
+                        print("Error: \(error.localizedDescription)")
+                    }
+                    completion(error)
+                    return
+                }
+                
+                // Handle successful sign in
+                print("Sign in successful!")
+                
+                // Add user data to Firestore
+                guard let userID = authResult?.user.uid else {
+                    return
+                }
+                userRef.document(userID).setData([
+                    "username": "\(username)",
+                ]) { error in
+                    if let error = error {
+                        print("Error adding user data to Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("User data added to Firestore successfully")
+                    }
+                }
+            }
         }
     }
     
@@ -158,7 +198,7 @@ class AuthService: ObservableObject {
 
 
     
-    // Regular password acount sign out.
+    //MARK: Regular password acount sign out.
     // Closure has whether sign out was successful or not
     func regularSignOut(completion: @escaping (Error?) -> Void) {
         let firebaseAuth = Auth.auth()
@@ -170,7 +210,7 @@ class AuthService: ObservableObject {
           completion(signOutError)
         }
     }
-    
+    //MARK: google sign in
     func googleSignIn() {
             guard let clientID = FirebaseApp.app()?.options.clientID else { return }
 
@@ -212,12 +252,13 @@ class AuthService: ObservableObject {
                 }
             }
         }
-    // Sign out if used Single-sign-on with Google
+    //MARK: google sign out
     func googleSignOut() {
         GIDSignIn.sharedInstance.signOut()
         print("Google sign out")
     }
     
+    //MARK: password reset
     func passwordReset(email: String,completion: @escaping (Error?) -> Void){
         guard isValidEmail(email) else {
                     let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid email address."])
@@ -244,6 +285,57 @@ class AuthService: ObservableObject {
                     completion(error)
                 }
     }
+    
+    //MARK: account deletion
+    func deleteAccount() {
+        guard let user = Auth.auth().currentUser else {
+            print("No user signed in")
+            return
+        }
+
+        // Delete profile picture from Firebase Storage
+        deleteProfilePictureFromStorage(for: user)
+
+        // Delete user document from Firestore
+        deleteUserDocumentFromFirestore(for: user)
+
+        // Delete user account
+        user.delete { error in
+            if let error = error {
+                print("Error deleting account: \(error.localizedDescription)")
+            } else {
+                print("Account deleted successfully")
+            }
+        }
+    }
+
+    func deleteProfilePictureFromStorage(for user: User) {
+        let userId = user.uid
+        let storageRef = Storage.storage().reference().child("profile_pictures/\(userId).jpg")
+
+        storageRef.delete { error in
+            if let error = error {
+                print("Error deleting profile picture from Storage: \(error.localizedDescription)")
+            } else {
+                print("Profile picture deleted from Storage")
+            }
+        }
+    }
+
+    func deleteUserDocumentFromFirestore(for user: User) {
+        let userId = user.uid
+        let db = Firestore.firestore()
+        let userProfileRef = db.collection("userProfiles").document(userId)
+
+        userProfileRef.delete { error in
+            if let error = error {
+                print("Error deleting user document from Firestore: \(error.localizedDescription)")
+            } else {
+                print("User document deleted from Firestore")
+            }
+        }
+    }
+
     
 }
 

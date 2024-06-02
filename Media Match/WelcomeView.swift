@@ -3,6 +3,8 @@ import SwiftUI
 struct WelcomeView: View {
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var username: String = ""
+    @State private var usernameErrorMessage: String? = nil
     @State private var emailErrorMessage: String? = nil
     @State private var passwordErrorMessage: String? = nil
     @EnvironmentObject var authService: AuthService
@@ -44,6 +46,18 @@ struct WelcomeView: View {
                     HStack {
                         Spacer()
                         VStack {
+                            TextField("Username", text: $username)
+                                .textFieldStyle(.roundedBorder)
+                                .autocorrectionDisabled()
+                                .autocapitalization(.none)
+                                .border(usernameErrorMessage != nil ? Color.red : Color.clear)
+                            if let usernameErrorMessage = usernameErrorMessage{
+                                Text(usernameErrorMessage)
+                                    .foregroundColor(.red)
+                                    .font(.footnote)
+                                    .padding(.top, 2)
+                            }
+                            
                             TextField("Email", text: $email)
                                 .textFieldStyle(.roundedBorder)
                                 .autocorrectionDisabled()
@@ -73,20 +87,28 @@ struct WelcomeView: View {
                     }
                     
                     Button("Create an Account") {
-                        authService.regularCreateAccount(email: email, password: password) { error in
+                        authService.regularCreateAccount(email: email, password: password, username: username) { error in
                             if let error = error {
                                 let errorMessage = error.localizedDescription
                                 if errorMessage.contains("email") {
+                                    self.usernameErrorMessage = nil
                                     self.emailErrorMessage = errorMessage
                                     self.passwordErrorMessage = nil
                                 } else if errorMessage.contains("Password") {
+                                    self.usernameErrorMessage = nil
                                     self.passwordErrorMessage = errorMessage
                                     self.emailErrorMessage = nil
+                                } else if errorMessage.contains ("Username"){
+                                    self.usernameErrorMessage = errorMessage
+                                    self.passwordErrorMessage = nil
+                                    self.emailErrorMessage = nil
                                 } else {
+                                    self.usernameErrorMessage = nil
                                     self.emailErrorMessage = nil
                                     self.passwordErrorMessage = nil
                                 }
                             } else {
+                                self.usernameErrorMessage = nil
                                 self.emailErrorMessage = nil
                                 self.passwordErrorMessage = nil
                             }
