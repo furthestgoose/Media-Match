@@ -212,46 +212,86 @@ class AuthService: ObservableObject {
     }
     //MARK: google sign in
     func googleSignIn() {
-            guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
 
-            // Create Google Sign In configuration object.
-            let config = GIDConfiguration(clientID: clientID)
-            
-            // As you’re not using view controllers to retrieve the presentingViewController, access it through
-            // the shared instance of the UIApplication
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-            guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
+        // Create Google Sign In configuration object.
+        let config = GIDConfiguration(clientID: clientID)
+        
+        // Access the presenting view controller.
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+        guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
 
-            // Start the sign in flow!
-            GIDSignIn.sharedInstance.signIn(with: config, presenting: rootViewController) { [unowned self] user, error in
-
-              if let error = error {
-                  print("Error doing Google Sign-In, \(error)")
-                  return
-              }
-
-              guard
-                let authentication = user?.authentication,
-                let idToken = authentication.idToken
-              else {
-                print("Error during Google Sign-In authentication, \(error)")
+        // Start the sign-in flow!
+        GIDSignIn.sharedInstance.signIn(with: config, presenting: rootViewController) { [unowned self] user, error in
+            if let error = error {
+                print("Error doing Google Sign-In, \(error)")
                 return
-              }
+            }
 
-              let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                             accessToken: authentication.accessToken)
-                
-                
-                // Authenticate with Firebase
-                Auth.auth().signIn(with: credential) { authResult, error in
-                    if let e = error {
-                        print(e.localizedDescription)
-                    }
-                   
-                    print("Signed in with Google")
+            guard
+                let authentication = user?.authentication,
+                let idToken = authentication.idToken,
+                let email = user?.profile?.email
+            else {
+                print("Error during Google Sign-In authentication, \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
+
+            // Authenticate with Firebase
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    print(error.localizedDescription)
+                    return
                 }
+
+                print("Signed in with Google")
+                
+                // Extract the part before "@" in the email to use as username
+                let emailPrefix = email.components(separatedBy: "@").first ?? ""
+                self.checkAndSaveUsername(username: emailPrefix, email: email)
             }
         }
+    }
+
+    func checkAndSaveUsername(username: String, email: String) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("userProfiles")
+
+        userRef.whereField("username", isEqualTo: username).getDocuments { [unowned self] (querySnapshot, error) in
+            if let error = error {
+                print("Error checking username: \(error.localizedDescription)")
+                return
+            }
+
+            if let querySnapshot = querySnapshot, !querySnapshot.isEmpty {
+                // Username is already taken, append a number to make it unique
+                let newUsername = username + "\(querySnapshot.count + 1)"
+                self.saveUsernameToFirestore(username: newUsername, email: email)
+            } else {
+                // Username is available, save it to Firestore
+                self.saveUsernameToFirestore(username: username, email: email)
+            }
+        }
+    }
+
+    func saveUsernameToFirestore(username: String, email: String) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+
+        let userRef = Firestore.firestore().collection("userProfiles").document(userID)
+        userRef.setData([
+            "username": username,
+            "email": email
+        ]) { error in
+            if let error = error {
+                print("Error adding user data to Firestore: \(error.localizedDescription)")
+            } else {
+                print("User data added to Firestore successfully")
+            }
+        }
+    }
+
     //MARK: google sign out
     func googleSignOut() {
         GIDSignIn.sharedInstance.signOut()

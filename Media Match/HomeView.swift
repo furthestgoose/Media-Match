@@ -12,10 +12,10 @@ struct HomeView: View {
     @State private var isUploading = false
     
     var body: some View {
-        NavigationView{
+        NavigationStack {
             VStack {
                 if let profile = userProfile {
-                    NavigationLink(destination: UserProfileView()) { // Link to another view
+                    NavigationLink(destination: UserProfileView()) {
                         VStack {
                             if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
                                 AsyncImage(url: url) { phase in
@@ -55,8 +55,6 @@ struct HomeView: View {
                     }
                 } else {
                     ProgressView()
-                        .frame(maxWidth: .infinity, alignment: .topTrailing) // Ensure image is in top right
-                        .padding(.trailing)
                 }
                 Spacer() // Pushes content to top
                 Text("Home Page")
@@ -84,7 +82,8 @@ struct HomeView: View {
                 userId: data["userId"] as? String ?? "",
                 username: data["username"] as? String ?? "",
                 profilePictureURL: data["profilePictureURL"] as? String ?? "",
-                likedItems: data["likedItems"] as? [String] ?? []
+                likedItems: data["likedItems"] as? [String] ?? [],
+                friends: data["friends"] as? [String] ?? []
             )
             self.userProfile = profile
         }

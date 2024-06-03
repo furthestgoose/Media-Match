@@ -13,7 +13,7 @@ struct StartView: View {
     
     var body: some View {
         if authService.signedIn {
-            HomeView()
+            MainView()
         } else {
             WelcomeView()
         }
@@ -25,7 +25,7 @@ struct StartView_Previews: PreviewProvider {
 
     static var previews: some View {
         if authService.signedIn {
-            HomeView()
+            MainView()
         } else {
             WelcomeView()
         }

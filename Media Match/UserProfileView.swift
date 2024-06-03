@@ -13,120 +13,121 @@ struct UserProfileView: View {
     @State private var showDeleteAccountAlert = false // New state variable
 
     var body: some View {
-        ZStack {
-            Color.theme
-                .ignoresSafeArea()
-            VStack {
-                if let profile = userProfile {
-                    Form {
-                        Section(header: Text("Profile")) {
-                            HStack {
-                                Spacer()
-                                if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 100, height: 100)
-                                                .clipShape(Circle())
-                                        case .failure(_):
-                                            Image("default-profile")
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 100, height: 100)
-                                                .clipShape(Circle())
-                                        case .empty:
-                                            ProgressView()
-                                        @unknown default:
-                                            EmptyView()
+            ZStack {
+                Color.theme
+                    .ignoresSafeArea()
+                VStack {
+                    if let profile = userProfile {
+                        Form {
+                            Section(header: Text("Profile")) {
+                                HStack {
+                                    Spacer()
+                                    if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
+                                        AsyncImage(url: url) { phase in
+                                            switch phase {
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 100, height: 100)
+                                                    .clipShape(Circle())
+                                            case .failure(_):
+                                                Image("default-profile")
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 100, height: 100)
+                                                    .clipShape(Circle())
+                                            case .empty:
+                                                ProgressView()
+                                            @unknown default:
+                                                EmptyView()
+                                            }
                                         }
+                                    } else {
+                                        Image("default-profile")
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 100, height: 100)
+                                            .clipShape(Circle())
                                     }
-                                } else {
-                                    Image("default-profile")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 100, height: 100)
-                                        .clipShape(Circle())
+                                    Spacer()
                                 }
-                                Spacer()
+                                
+                                HStack {
+                                    Spacer()
+                                    Text(profile.username.prefix(1).capitalized + profile.username.dropFirst())
+                                        .font(.subheadline)
+                                    Spacer()
+                                }
                             }
                             
-                            HStack {
-                                Spacer()
-                                Text(profile.username.prefix(1).capitalized + profile.username.dropFirst())
-                                    .font(.subheadline)
-                                Spacer()
-                            }
-                        }
-                        
-                        Section (header: Text("Account actions")){
-                            Button(action: {
-                                showImagePicker = true
-                            }) {
-                                Label("Upload Profile Picture", systemImage: "icloud.and.arrow.up")
-                            }
-                            .buttonStyle(.plain)
-                            .sheet(isPresented: $showImagePicker) {
-                                ImagePicker(image: $selectedImage)
-                                    .onDisappear {
-                                        if let selectedImage = selectedImage {
-                                            uploadProfilePicture(image: selectedImage)
+                            Section (header: Text("Account actions")){
+                                Button(action: {
+                                    showImagePicker = true
+                                }) {
+                                    Label("Upload Profile Picture", systemImage: "icloud.and.arrow.up")
+                                }
+                                .buttonStyle(.plain)
+                                .sheet(isPresented: $showImagePicker) {
+                                    ImagePicker(image: $selectedImage)
+                                        .onDisappear {
+                                            if let selectedImage = selectedImage {
+                                                uploadProfilePicture(image: selectedImage)
+                                            }
                                         }
-                                    }
+                                }
+                                
+                                NavigationLink(destination: passwordResetView()) {
+                                    Label("Reset your password", systemImage: "lock.open.rotation")
+                                }
+                                .buttonStyle(.plain)
                             }
                             
-                            NavigationLink(destination: passwordResetView()) {
-                                Label("Reset your password", systemImage: "lock.open.rotation")
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        
-                        Section (header: Label("Danger Zone", systemImage: "exclamationmark.triangle") .foregroundColor(.red)){
-                            Button(action: {
-                                logOut()
-                            }) {
-                                Label("Log out", systemImage: "rectangle.portrait.and.arrow.forward")
+                            Section (header: Label("Danger Zone", systemImage: "exclamationmark.triangle") .foregroundColor(.red)){
+                                Button(action: {
+                                    logOut()
+                                }) {
+                                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.forward")
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(.plain)
+                                .cornerRadius(10)
+                                
+                                Button(action: {
+                                    showDeleteAccountAlert = true // Show the alert when clicked
+                                }) {
+                                    Label("Delete Account", systemImage: "trash")
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(.plain)
+                                .alert(isPresented: $showDeleteAccountAlert) {
+                                    Alert(
+                                        title: Text("Delete Account"),
+                                        message: Text("Are you sure you want to delete your account? This action is irreversible."),
+                                        primaryButton: .destructive(Text("Delete")) {
+                                            authService.deleteAccount()
+                                            logOut()
+                                        },
+                                        secondaryButton: .cancel()
+                                    )
+                                }
+                                
+                                Text("Warning: Deleting your account is irreversible. All your data will be permanently removed.")
                                     .foregroundColor(.red)
+                                    .font(.footnote)
                             }
-                            .buttonStyle(.plain)
-                            .cornerRadius(10)
-                            
-                            Button(action: {
-                                showDeleteAccountAlert = true // Show the alert when clicked
-                            }) {
-                                Label("Delete Account", systemImage: "trash")
-                                    .foregroundColor(.red)
-                            }
-                            .buttonStyle(.plain)
-                            .alert(isPresented: $showDeleteAccountAlert) {
-                                Alert(
-                                    title: Text("Delete Account"),
-                                    message: Text("Are you sure you want to delete your account? This action is irreversible."),
-                                    primaryButton: .destructive(Text("Delete")) {
-                                        authService.deleteAccount()
-                                        logOut()
-                                    },
-                                    secondaryButton: .cancel()
-                                )
-                            }
-                            
-                            Text("Warning: Deleting your account is irreversible. All your data will be permanently removed.")
-                                .foregroundColor(.red)
-                                .font(.footnote)
                         }
+                    } else {
+                        ProgressView()
                     }
-                } else {
-                    ProgressView()
                 }
-            }
-            .onAppear {
-                fetchUserProfile()
-            }
-            .alert(isPresented: $isUploading) {
-                Alert(title: Text("Uploading"), message: Text("Uploading profile picture..."))
-            }
+                .onAppear {
+                    fetchUserProfile()
+                }
+                .alert(isPresented: $isUploading) {
+                    Alert(title: Text("Uploading"), message: Text("Uploading profile picture..."))
+                }
+                .toolbar(.hidden, for: .tabBar)
         }
     }
     
@@ -156,7 +157,8 @@ struct UserProfileView: View {
                 userId: data["userId"] as? String ?? "",
                 username: data["username"] as? String ?? "",
                 profilePictureURL: data["profilePictureURL"] as? String ?? "",
-                likedItems: data["likedItems"] as? [String] ?? []
+                likedItems: data["likedItems"] as? [String] ?? [],
+                friends: data["friends"] as? [String] ?? []
             )
             self.userProfile = profile
         }
