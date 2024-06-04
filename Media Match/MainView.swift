@@ -9,22 +9,41 @@ import SwiftUI
 
 struct MainView: View {
     var body: some View {
-        TabView {
-                    HomeView()
-                        .tabItem {
-                            Label("Browse", systemImage: "doc.text.magnifyingglass")
-                        }
-
-                    FriendView()
-                        .tabItem {
-                            Label("Friends", systemImage: "person.2.fill")
-                        }
-                    MatchView()
-                        .tabItem{
-                            Label("Matches", systemImage: "heart.circle")
-                        }
-                }
-    }
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house")
+                    }
+                    .toolbarBackground(.visible, for: .tabBar)
+                    .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                       startPoint: .leading,
+                                                      endPoint: .trailing).opacity(0.8), for: .tabBar)
+                SwipeCardView()
+                    .tabItem {
+                        Label("Browse", systemImage: "doc.text.magnifyingglass")
+                    }
+                    .toolbarBackground(.visible, for: .tabBar)
+                    .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                       startPoint: .leading,
+                                                      endPoint: .trailing).opacity(0.8), for: .tabBar)
+                FriendView()
+                    .tabItem {
+                        Label("Friends", systemImage: "person.2.fill")
+                    }
+                    .toolbarBackground(.visible, for: .tabBar)
+                    .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                       startPoint: .leading,
+                                                      endPoint: .trailing).opacity(0.8), for: .tabBar)
+                MatchView()
+                    .tabItem {
+                        Label("Matches", systemImage: "heart.circle")
+                    }
+                    .toolbarBackground(.visible, for: .tabBar)
+                    .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                       startPoint: .leading,
+                                                      endPoint: .trailing).opacity(0.8), for: .tabBar)
+            }
+        }
 }
 
 #Preview {
