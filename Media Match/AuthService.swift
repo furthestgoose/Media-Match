@@ -333,6 +333,89 @@ class AuthService: ObservableObject {
             return
         }
 
+        let db = Firestore.firestore()
+        let userProfilesRef = db.collection("userProfiles")
+
+        // Delete the current user's UID from the "friends" array of all other users
+        userProfilesRef.whereField("friends", arrayContains: user.uid).getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error fetching user profiles: \(error.localizedDescription)")
+                return
+            }
+
+            guard let documents = snapshot?.documents else {
+                print("No user profiles found")
+                return
+            }
+
+            let dispatchGroup = DispatchGroup()
+
+            for document in documents {
+                let userId = document.documentID
+
+                // Skip updating the current user's document
+                if userId == user.uid {
+                    continue
+                }
+
+                dispatchGroup.enter()
+                userProfilesRef.document(userId).updateData(["friends": FieldValue.arrayRemove([user.uid])]) { error in
+                    dispatchGroup.leave()
+                    if let error = error {
+                        print("Error removing user from friends array: \(error.localizedDescription)")
+                    } else {
+                        print("User removed from friends array successfully")
+                    }
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                // Continue with the rest of the account deletion process
+                self.deleteRemainingData(for: user)
+            }
+        }
+    }
+
+    func deleteRemainingData(for user: User) {
+        let db = Firestore.firestore()
+
+        // Delete all documents in friendRequests where the current user's UID is the document name
+        let friendRequestsRef = db.collection("friendRequests").document(user.uid)
+        friendRequestsRef.delete { error in
+            if let error = error {
+                print("Error deleting friendRequests document: \(error.localizedDescription)")
+            } else {
+                print("friendRequests document successfully deleted!")
+            }
+        }
+
+        // Delete all subdocuments in friendRequests where the current user's UID is the subdocument name
+        let subdocumentsRef = db.collection("friendRequests").document(user.uid).collection("sent")
+        subdocumentsRef.getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error fetching subdocuments: \(error.localizedDescription)")
+                return
+            }
+
+            guard let documents = snapshot?.documents else {
+                print("No subdocuments found to delete")
+                return
+            }
+
+            // Iterate over the subdocuments and delete each one
+            for document in documents {
+                if document.documentID == user.uid {
+                    document.reference.delete { error in
+                        if let error = error {
+                            print("Error removing subdocument: \(error.localizedDescription)")
+                        } else {
+                            print("Subdocument successfully removed!")
+                        }
+                    }
+                }
+            }
+        }
+
         // Delete profile picture from Firebase Storage
         deleteProfilePictureFromStorage(for: user)
 
@@ -348,7 +431,6 @@ class AuthService: ObservableObject {
             }
         }
     }
-
     func deleteProfilePictureFromStorage(for user: User) {
         let userId = user.uid
         let storageRef = Storage.storage().reference().child("profile_pictures/\(userId).jpg")

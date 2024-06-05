@@ -18,14 +18,6 @@ struct MainView: View {
                     .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
                                                        startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
-                SwipeCardView()
-                    .tabItem {
-                        Label("Browse", systemImage: "doc.text.magnifyingglass")
-                    }
-                    .toolbarBackground(.visible, for: .tabBar)
-                    .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                       startPoint: .leading,
-                                                      endPoint: .trailing).opacity(0.8), for: .tabBar)
                 FriendView()
                     .tabItem {
                         Label("Friends", systemImage: "person.2.fill")

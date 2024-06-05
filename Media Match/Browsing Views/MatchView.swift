@@ -269,7 +269,7 @@ struct MovieDetailView: View {
             }
             .padding()
         }
-        .frame(width: 400, height: 700)
+        .frame(maxWidth: 400, maxHeight: 800)
     }
     
     private func posterURL(for posterPath: String) -> URL? {

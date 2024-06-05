@@ -56,10 +56,68 @@ struct HomeView: View {
                 } else {
                     ProgressView()
                 }
-                Spacer() // Pushes content to top
-                Text("Home Page")
-                    .font(.title)
-                Spacer()
+                
+                ScrollView(.vertical) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Browse Content")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .padding(.horizontal)
+                            .padding(.bottom)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack(spacing: 20) {
+                                NavigationLink(destination: MovieBrowse()) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 25)
+                                            .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                                 startPoint: .top,
+                                                                 endPoint: .bottom))
+                                            .frame(width: 300, height: 150)
+                                        
+                                        VStack {
+                                            Image(systemName: "film")
+                                                .resizable()
+                                                .foregroundColor(.white)
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 100, height: 100)
+                                            Text("Movies")
+                                                .font(.body)
+                                                .foregroundColor(.white)
+                                        }
+                                    }
+                                    .frame(width: 300, height: 150) // Ensure each card has fixed width and height
+                                }
+                                
+                                NavigationLink(destination: HomeView()) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 25)
+                                            .fill(Color.blue)
+                                            .frame(width: 300, height: 150)
+                                        
+                                        VStack {
+                                            Image(systemName: "tv")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 50, height: 50)
+                                            Text("TV Shows")
+                                                .font(.caption)
+                                                .foregroundColor(.black)
+                                        }
+                                    }
+                                    .frame(width: 300, height: 150) // Ensure each card has fixed width and height
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 20) // Adjusted padding to horizontal
+                            .padding(.top)
+                            .padding(.bottom, 20)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal) // Remove unnecessary padding
+                }
+                .background(Color.clear) // Set background color to transparent
             }
             .onAppear {
                 fetchUserProfile()
@@ -95,4 +153,5 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
+
 
