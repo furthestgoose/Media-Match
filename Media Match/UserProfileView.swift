@@ -14,8 +14,6 @@ struct UserProfileView: View {
 
     var body: some View {
             ZStack {
-                Color.theme
-                    .ignoresSafeArea()
                 VStack {
                     if let profile = userProfile {
                         Form {

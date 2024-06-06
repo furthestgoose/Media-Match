@@ -2,9 +2,9 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
-struct CardData: Identifiable, Equatable, Hashable {
+struct TvShowCardData: Identifiable, Equatable, Hashable {
     var id = UUID()
-    let movieID: Int
+    let showID: Int
     let title: String
     let description: String
     let posterPath: String?
@@ -12,26 +12,26 @@ struct CardData: Identifiable, Equatable, Hashable {
     let releaseYear: String
     let ageRating: String
     
-    static func == (lhs: CardData, rhs: CardData) -> Bool {
+    static func == (lhs: TvShowCardData, rhs: TvShowCardData) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-struct MovieBrowse: View {
-    @State private var currentCards: [CardData] = []
-    @State private var prefetchedPages: [[CardData]] = []
+struct TvBrowse: View {
+    @State private var currentCards: [TvShowCardData] = []
+    @State private var prefetchedPages: [[TvShowCardData]] = []
     @State private var offset = CGSize.zero
     @State private var rotation = 0.0
     @State private var currentPage = 1
-    @State private var dislikedMovieIDs: Set<Int> = []
+    @State private var dislikedShowIDs: Set<Int> = []
     @State private var showIntroduction = !UserDefaults.standard.bool(forKey: "hasSeenIntroduction")
-    @State private var fetchedMovies: [CardData] = []
+    @State private var fetchedShows: [TvShowCardData] = []
     @State private var selection = "All"
     @State private var providerSelection = "All"
     @State private var regionSelection = "All"
-    @State private var filterby = "28"
+    @State private var filterby = ""
     @State private var regioncode = "US"
-    let choice = ["All","Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary","Drama", "Family", "Fantasy", "Horror", "History", "Music", "Mystery", "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"]
+    let choice = ["All","Action & Adventure", "Animation", "Comedy", "Crime", "Documentary","Drama", "Family", "Kids", "Mystery", "News", "Reality", "Sci-Fi & Fantasy", "Soap", "Talk", "War & Politics","Western"]
     let provider = ["All", "Netflix", "Apple TV", "Amazon Prime Video","Disney Plus", "HBO Max" ]
     let region = [
         "All",
@@ -184,8 +184,8 @@ struct MovieBrowse: View {
                 VStack {
                     ZStack {
                         ForEach(currentCards) { card in
-                            MovieCardView(card: card, onLike: { offset = CGSize(width: 500, height: 0); handleSwipeRight(for: card); removeCard() },
-                                     onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
+                            TvShowCardView(card: card, onLike: { offset = CGSize(width: 500, height: 0); handleSwipeRight(for: card); removeCard() },
+                                           onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
                                 .offset(x: card.id == currentCards.last?.id ? offset.width : 0, y: 0)
                                 .rotationEffect(.degrees(card.id == currentCards.last?.id ? rotation : 0))
                                 .scaleEffect(card.id == currentCards.last?.id ? 1 : 0.95)
@@ -222,7 +222,7 @@ struct MovieBrowse: View {
                     }
                     .padding()
                     .onAppear {
-                        fetchInitialMovies()
+                        fetchInitialShows()
                     }
                 }
                 
@@ -245,10 +245,8 @@ struct MovieBrowse: View {
                         .pickerStyle(.menu)
                         .onChange(of: selection) { newValue in
                             switch newValue {
-                            case "Action":
-                                filterby = "28"
-                            case "Adventure":
-                                filterby = "12"
+                            case "Action & Adventure":
+                                filterby = "10759"
                             case "Animation":
                                 filterby = "16"
                             case "Comedy":
@@ -261,32 +259,28 @@ struct MovieBrowse: View {
                                 filterby = "18"
                             case "Family":
                                 filterby = "10751"
-                            case "Fantasy":
-                                filterby = "14"
-                            case "Horror":
-                                filterby = "27"
-                            case "History":
-                                filterby = "36"
-                            case "Music":
-                                filterby = "10402"
+                            case "Kids":
+                                filterby = "10762"
                             case "Mystery":
                                 filterby = "9648"
-                            case "Romance":
-                                filterby = "10749"
-                            case "Science Fiction":
-                                filterby = "878"
-                            case "TV Movie":
-                                filterby = "10770"
-                            case "Thriller":
-                                filterby = "53"
-                            case "War":
-                                filterby = "10752"
+                            case "News":
+                                filterby = "10763"
+                            case "Reality":
+                                filterby = "10764"
+                            case "Sci-Fi & Fantasy":
+                                filterby = "10765"
+                            case "Soap":
+                                filterby = "10766"
+                            case "Talk":
+                                filterby = "10767"
+                            case "War & Politics":
+                                filterby = "10768"
                             case "Western":
                                 filterby = "37"
                             default:
                                 filterby = ""
                             }
-                            resetAndFetchMovies()
+                            resetAndFetchShows()
                         }
                         Picker("Select a Streaming Service", selection: $providerSelection) {
                             ForEach(provider, id: \.self) {
@@ -295,7 +289,7 @@ struct MovieBrowse: View {
                         }
                         .pickerStyle(.menu)
                         .onChange(of: providerSelection) { newValue in
-                            resetAndFetchMovies()
+                            resetAndFetchShows()
                         }
                         Picker("Select a Region", selection: $regionSelection) {
                             ForEach(region, id: \.self) {
@@ -584,7 +578,7 @@ struct MovieBrowse: View {
                             default:
                                 regioncode = ""
                             }
-                            resetAndFetchMovies()
+                            resetAndFetchShows()
                         }
                     }label: {
                         Image(systemName: "slider.horizontal.3")
@@ -596,11 +590,11 @@ struct MovieBrowse: View {
         }
     }
     
-    private func resetAndFetchMovies() {
+    private func resetAndFetchShows() {
             currentCards = []
             prefetchedPages = []
             currentPage = 1
-            fetchInitialMovies()
+            fetchInitialShows()
         }
     
     private func removeCard() {
@@ -609,28 +603,28 @@ struct MovieBrowse: View {
             offset = .zero
             rotation = 0
 
-            if currentCards.isEmpty && !self.fetchedMovies.isEmpty {
+            if currentCards.isEmpty && !self.fetchedShows.isEmpty {
                 withAnimation(.spring()) {
-                    currentCards = self.fetchedMovies
-                    self.fetchedMovies.removeAll()
+                    currentCards = self.fetchedShows
+                    self.fetchedShows.removeAll()
                 }
             }
 
             if currentCards.isEmpty {
                 currentPage += 1
-                fetchMovies(forPage: currentPage, excluding: dislikedMovieIDs)
+                fetchShows(forPage: currentPage, excluding: dislikedShowIDs)
             }
         }
     }
     
-    private func fetchInitialMovies() {
+    private func fetchInitialShows() {
         for page in currentPage...(currentPage + prefetchCount - 1) {
-            fetchMovies(forPage: page, excluding: dislikedMovieIDs)
+            fetchShows(forPage: page, excluding: dislikedShowIDs)
         }
         currentPage += prefetchCount
     }
     
-    private func fetchMovies(forPage page: Int, excluding dislikedMovieIDs: Set<Int>) {
+    private func fetchShows(forPage page: Int, excluding dislikedShowIDs: Set<Int>) {
         guard let currentUser = Auth.auth().currentUser else {
             print("No user signed in")
             return
@@ -650,14 +644,14 @@ struct MovieBrowse: View {
                 return
             }
 
-            let likedMovieIDs = userData["likedItems"] as? [Int] ?? []
-            let dislikedMovieIDs = userData["dislikedItems"] as? [Int] ?? []
+            let likedShowIDs = userData["likedShows"] as? [Int] ?? []
+            let dislikedShowIDs = userData["dislikedShows"] as? [Int] ?? []
 
-            let likedMovieIDSet = Set(likedMovieIDs)
-            let dislikedMovieIDSet = Set(dislikedMovieIDs)
+            let likedShowIDSet = Set(likedShowIDs)
+            let dislikedShowIDSet = Set(dislikedShowIDs)
 
             let apiKey = "APIkey"
-            let urlString = "https://api.themoviedb.org/3/discover/movie"
+            let urlString = "https://api.themoviedb.org/3/discover/tv"
 
             var parameters: [String: Any] = [
                 "api_key": apiKey,
@@ -665,7 +659,7 @@ struct MovieBrowse: View {
                 "sort_by": "popularity.desc",
                 "page": page
             ]
-
+            
             if !filterby.isEmpty {
                 parameters["with_genres"] = filterby
             }
@@ -689,21 +683,21 @@ struct MovieBrowse: View {
             URLSession.shared.dataTask(with: finalURL) { data, response, error in
                 if let data = data {
                     do {
-                        let movieResponse = try JSONDecoder().decode(MovieResponse.self, from: data)
-                        let movieIDs = movieResponse.results
-                            .filter { !dislikedMovieIDSet.contains($0.id) && !likedMovieIDSet.contains($0.id) }
+                        let showResponse = try JSONDecoder().decode(ShowResponse.self, from: data)
+                        let showIDs = showResponse.results
+                            .filter { !dislikedShowIDSet.contains($0.id) && !likedShowIDSet.contains($0.id) }
                             .map { $0.id }
 
-                        self.fetchMovieDetails(movieIDs: movieIDs) { movies in
-                            let newCards = movies.map { movie in
-                                CardData(
-                                    movieID: movie.id,
-                                    title: movie.title,
-                                    description: movie.overview,
-                                    posterPath: movie.posterPath,
-                                    score: movie.voteAverage,
-                                    releaseYear: movie.releaseDate,
-                                    ageRating: movie.ageRating ?? "Rating Not Found"
+                        self.fetchShowDetails(showIDs: showIDs) { shows in
+                            let newCards = shows.map { show in
+                                TvShowCardData(
+                                    showID: show.id,
+                                    title: show.name,
+                                    description: show.overview,
+                                    posterPath: show.posterPath,
+                                    score: show.voteAverage,
+                                    releaseYear: show.firstAirDate,
+                                    ageRating: show.ageRating ?? "Rating Not Found"
                                 )
                             }
                             DispatchQueue.main.async {
@@ -720,302 +714,243 @@ struct MovieBrowse: View {
             }.resume()
         }
     }
-    private func fetchMovieDetails(movieIDs: [Int], completion: @escaping ([Movie]) -> Void) {
-        let apiKey = "APIkey"
-        let baseURL = "https://api.themoviedb.org/3/movie/"
-        let parameters: [String: Any] = [
-            "api_key": apiKey,
-            "language": "en-US"
-        ]
-        
-        var movies: [Movie] = []
-        let group = DispatchGroup()
-        
-        for movieID in movieIDs {
-            group.enter()
-            
-            let urlString = "\(baseURL)\(movieID)"
-            guard let url = URL(string: urlString),
-                  var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-                group.leave()
-                continue
-            }
-            components.queryItems = parameters.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
-            
-            guard let finalURL = components.url else {
-                group.leave()
-                continue
-            }
-            
-            URLSession.shared.dataTask(with: finalURL) { data, response, error in
-                defer {
-                    group.leave()
-                }
+    
+    private func fetchShowDetails(showIDs: [Int], completion: @escaping ([Show]) -> Void) {
+                let apiKey = "APIkey"
+                let baseURL = "https://api.themoviedb.org/3/tv/"
+                let parameters: [String: Any] = [
+                    "api_key": apiKey,
+                    "language": "en-US"
+                ]
                 
-                if let data = data {
-                    do {
-                        let movie = try JSONDecoder().decode(Movie.self, from: data)
-                        
-                        let releaseDatesURL = URL(string: "\(baseURL)\(movieID)/release_dates?api_key=\(apiKey)")!
-                        URLSession.shared.dataTask(with: releaseDatesURL) { releaseDatesData, releaseDatesResponse, releaseDatesError in
-                            if let releaseDatesData = releaseDatesData {
-                                do {
-                                    let releaseDatesResponse = try JSONDecoder().decode(ReleaseDatesResponse.self, from: releaseDatesData)
-                                    
-                                    // Find the age rating for the US region
-                                    if let usReleaseDate = releaseDatesResponse.results.first(where: { $0.iso31661 == "GB" }),
-                                       let usRelease = usReleaseDate.releaseDates.first(where: { $0.certification != nil }),
-                                       let certification = usRelease.certification {
-                                        var updatedMovie = movie
-                                        updatedMovie.ageRating = certification
-                                        movies.append(updatedMovie)
-                                    } else {
-                                        movies.append(movie)
-                                    }
-                                } catch {
-                                    print("Error decoding release dates JSON: \(error)")
-                                    movies.append(movie)        }
-                            } else {
-                                print("No release dates data received")
-                                movies.append(movie)
-                            }
-                            
-                            if movies.count == movieIDs.count {
-                                completion(movies)
-                            }
-                        }.resume()
-                    } catch {
-                        print("Error decoding JSON: \(error)")
+                var shows: [Show] = []
+                let group = DispatchGroup()
+                
+                for showID in showIDs {
+                    group.enter()
+                    
+                    let urlString = "\(baseURL)\(showID)"
+                    guard let url = URL(string: urlString),
+                          var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+                        group.leave()
+                        continue
                     }
-                } else {
-                    print("No data received")
-                }
-            }.resume()
-        }
-        
-        group.notify(queue: .main) {
-            completion(movies)
-        }
-    }
-    
-    func handleSwipeRight(for card: CardData) {
-        addLikedItem(movieID: card.movieID)
-    }
-    
-    func handleSwipeLeft(for card: CardData) {
-        addDislikedItem(movieID: card.movieID)
-        dislikedMovieIDs.insert(card.movieID)
-    }
-    
-    private func addLikedItem(movieID: Int) {
-        guard let currentUser = Auth.auth().currentUser else {
-            print("No user signed in")
-            return
-        }
-        
-        let db = Firestore.firestore()
-        let userRef = db.collection(userProfilesCollection).document(currentUser.uid)
-        
-        userRef.updateData(["likedMovies": FieldValue.arrayUnion([movieID])]) { error in
-            if let error = error {
-                print("Error adding liked item to Firestore: \(error)")
-            } else {
-                print("Added liked item to Firestore")
-            }
-        }
-    }
-
-    
-    private func addDislikedItem(movieID: Int) {
-        guard let currentUser = Auth.auth().currentUser else {
-            print("No user signed in")
-            return
-        }
-        
-        let db = Firestore.firestore()
-        let userRef = db.collection(userProfilesCollection).document(currentUser.uid)
-        
-        userRef.updateData(["dislikedMovies": FieldValue.arrayUnion([movieID])]) { error in
-            if let error = error {
-                print("Error adding disliked item to Firestore: \(error)")
-            } else {
-                print("Added disliked item to Firestore")
-            }
-        }
-    }
-}
-
-struct MovieCardView: View {
-    let card: CardData
-    let onLike: () -> Void
-    let onDislike: () -> Void
-    
-    @State private var isExpanded = false
-    
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                     startPoint: .top,
-                                     endPoint: .bottom))
-            VStack {
-                if let posterPath = card.posterPath {
-                    if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 300, height: 300)
-                            case .failure(let error):
-                                Text("Error loading image: \(error.localizedDescription)")
-                                    .foregroundColor(.red)
-                            case .empty:
-                                ProgressView()
-                                    .frame(width: 300, height: 300)
-                            @unknown default:
-                                Color.gray
-                                    .frame(width: 300, height: 300)
-                            }
+                    components.queryItems = parameters.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+                    
+                    guard let finalURL = components.url else {
+                        group.leave()
+                        continue
+                    }
+                    
+                    URLSession.shared.dataTask(with: finalURL) { data, response, error in
+                        defer {
+                            group.leave()
                         }
-                    } else {
-                        Text("Invalid image URL")
-                            .foregroundColor(.red)
-                    }
-                } else {
-                    Text("No poster available")
-                        .foregroundColor(.red)
+                        
+                        if let data = data {
+                            do {
+                                let show = try JSONDecoder().decode(Show.self, from: data)
+                                shows.append(show)
+                            } catch {
+                                print("Error decoding JSON: \(error)")
+                            }
+                        } else {
+                            print("No data received")
+                        }
+                    }.resume()
                 }
                 
-                Text(card.title)
-                    .font(.title)
-                    .padding(.top)
-                    .foregroundColor(.white)
-                
-                HStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text("Score: \(card.score, specifier: "%.1f")")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text("\(card.releaseYear)")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text(" \(card.ageRating)")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
+                group.notify(queue: .main) {
+                    completion(shows)
                 }
-                .padding(.top)
-                
-                Text(card.description)
-                                    .foregroundColor(.white)
-                                    .font(.body)
-                                    .padding()
-                                    .lineLimit(isExpanded ? nil : 8) // Adjust the line limit as needed
-                                    .onTapGesture {
-                                        withAnimation {
-                                            isExpanded.toggle()
-                                        }
-                                    }
-                
-                HStack {
-                    Button(action: {
-                        onDislike()
-                    }) {
-                        Image(systemName: "x.circle")
-                            .font(.system(size: 40))
-                    }
-                    .foregroundColor(.red)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        onLike()
-                    }) {
-                        Image(systemName: "checkmark.circle")
-                            .font(.system(size: 40))
-                    }
-                    .foregroundColor(.green)
-                }
-                .padding()
             }
-            .padding()
-            .frame(maxWidth: 400)
-            .background(Color.clear) // Ensure the VStack respects the frame size
+            
+            func handleSwipeRight(for card: TvShowCardData) {
+                addLikedItem(showID: card.showID)
+            }
+            
+            func handleSwipeLeft(for card: TvShowCardData) {
+                addDislikedItem(showID: card.showID)
+                dislikedShowIDs.insert(card.showID)
+            }
+            
+            private func addLikedItem(showID: Int) {
+                guard let currentUser = Auth.auth().currentUser else {
+                    print("No user signed in")
+                    return
+                }
+                
+                let db = Firestore.firestore()
+                let userRef = db.collection(userProfilesCollection).document(currentUser.uid)
+                
+                userRef.updateData(["likedShows": FieldValue.arrayUnion([showID])]) { error in
+                    if let error = error {
+                        print("Error adding liked item to Firestore: \(error)")
+                    } else {
+                        print("Added liked item to Firestore")
+                    }
+                }
+            }
+
+            
+            private func addDislikedItem(showID: Int) {
+                guard let currentUser = Auth.auth().currentUser else {
+                    print("No user signed in")
+                    return
+                }
+                
+                let db = Firestore.firestore()
+                let userRef = db.collection(userProfilesCollection).document(currentUser.uid)
+                
+                userRef.updateData(["dislikedShows": FieldValue.arrayUnion([showID])]) { error in
+                    if let error = error {
+                        print("Error adding disliked item to Firestore: \(error)")
+                    } else {
+                        print("Added disliked item to Firestore")
+                    }
+                }
+            }
         }
-        .frame(maxWidth: 400)
-    }
-}
 
-// TMDB response structs
+        struct TvShowCardView: View {
+            let card: TvShowCardData
+            let onLike: () -> Void
+            let onDislike: () -> Void
+            
+            @State private var isExpanded = false
+            
+            var body: some View {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                             startPoint: .top,
+                                             endPoint: .bottom))
+                    VStack {
+                        if let posterPath = card.posterPath {
+                            if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 300, height: 300)
+                                    case .failure(let error):
+                                        Text("Error loading image: \(error.localizedDescription)")
+                                            .foregroundColor(.red)
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(width: 300, height: 300)
+                                    @unknown default:
+                                        Color.gray
+                                            .frame(width: 300, height: 300)
+                                    }
+                                }
+                            } else {
+                                Text("Invalid image URL")
+                                    .foregroundColor(.red)
+                            }
+                        } else {
+                            Text("No poster available")
+                                .foregroundColor(.red)
+                        }
+                        
+                        Text(card.title)
+                            .font(.title)
+                            .padding(.top)
+                            .foregroundColor(.white)
+                        
+                        HStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text("Score: \(card.score, specifier: "%.1f")")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+                            
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text("\(card.releaseYear)")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+                            
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text(" \(card.ageRating)")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+                        }
+                        .padding(.top)
+                        
+                        Text(card.description)
+                                            .foregroundColor(.white)
+                                            .font(.body)
+                                            .padding()
+                                            .lineLimit(isExpanded ? nil : 3) // Adjust the line limit as needed
+                                            .onTapGesture {
+                                                withAnimation {
+                                                    isExpanded.toggle()
+                                                }
+                                            }
+                        HStack {
+                            Button(action: {
+                                onDislike()
+                            }) {
+                                Image(systemName: "x.circle")
+                                    .font(.system(size: 40))
+                            }
+                            .foregroundColor(.red)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                onLike()
+                            }) {
+                                Image(systemName: "checkmark.circle")
+                                    .font(.system(size: 40))
+                            }
+                            .foregroundColor(.green)
+                                            }
+                                            .padding()
+                                        }
+                                        .padding()
+                                        .frame(maxWidth: 400, maxHeight: isExpanded ? .infinity : 1000)
+                                        .background(Color.clear) // Ensure the VStack respects the frame size
+                                    }
+                                    .frame(maxWidth: 400)
+                                }
+                            }
 
-struct MovieResponse: Codable {
-    let results: [Movie]
-}
+                            // TMDB response structs
 
-struct Movie: Codable {
-    let id: Int
-    let title: String
-    let overview: String
-    let posterPath: String?
-    let voteAverage: Double
-    let releaseDate: String
-    var ageRating: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case overview
-        case posterPath = "poster_path"
-        case voteAverage = "vote_average"
-        case releaseDate = "release_date"
-        case ageRating = "certification"
-    }
-}
+                            struct ShowResponse: Codable {
+                                let results: [Show]
+                            }
 
-struct ReleaseDatesResponse: Codable {
-    let results: [ReleaseDatesResult]
-}
-
-struct ReleaseDatesResult: Codable {
-    let iso31661: String
-    let releaseDates: [ReleaseDate]
-    
-    enum CodingKeys: String, CodingKey {
-        case iso31661 = "iso_3166_1"
-        case releaseDates = "release_dates"
-    }
-}
-
-struct ReleaseDate: Codable {
-    let certification: String?
-    let iso6391: String?
-    let note: String?
-    let releaseDate: String?
-    let type: Int?
-    
-    enum CodingKeys: String, CodingKey {
-        case certification
-        case iso6391 = "iso_639_1"
-        case note
-        case releaseDate = "release_date"
-        case type
-    }
-}
- 
+                            struct Show: Codable {
+                                let id: Int
+                                let name: String
+                                let overview: String
+                                let posterPath: String?
+                                let voteAverage: Double
+                                let firstAirDate: String
+                                var ageRating: String?
+                                
+                                enum CodingKeys: String, CodingKey {
+                                    case id
+                                    case name
+                                    case overview
+                                    case posterPath = "poster_path"
+                                    case voteAverage = "vote_average"
+                                    case firstAirDate = "first_air_date"
+                                    case ageRating = "certification"
+                                }
+                            }

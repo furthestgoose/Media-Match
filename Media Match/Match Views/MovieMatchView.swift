@@ -10,24 +10,21 @@ struct MovieDetails: Codable {
     var matchedFriendUsername: String?
 }
 
-struct MatchView: View {
+struct MovieMatchView: View {
+    var userId: String
     @State private var userID: String? // User's ID
     @State private var friendIDs: [String]? // IDs of the user's friends
-    
     @State private var matchedMovies: [MovieDetails] = []
     @State private var isLoading = false
-    
+    @State private var hasFetchedData = false // New state to prevent multiple fetches
+
     var body: some View {
         VStack {
-            Text("Matches")
-                .font(.title)
-                .padding()
-            
             if isLoading {
                 ProgressView()
                     .padding()
             } else if matchedMovies.isEmpty {
-                Text("No matches found")
+                Text("No Movie matches found")
                     .foregroundColor(.gray)
                     .padding()
             } else {
@@ -41,10 +38,15 @@ struct MatchView: View {
                 }
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            fetchUserData()
+            if !hasFetchedData { // Ensure fetchUserData is called only once
+                fetchUserData()
+                hasFetchedData = true
+            }
         }
     }
+    
     
     private func fetchUserData() {
         isLoading = true
@@ -72,7 +74,7 @@ struct MatchView: View {
             self.friendIDs = userData["friends"] as? [String]
             
             // Find matched movies
-            if let likedItems = userData["likedItems"] as? [Int], let friendIDs = self.friendIDs {
+            if let likedItems = userData["likedMovies"] as? [Int], let friendIDs = self.friendIDs {
                 findMatchedMovies(userID: userID, likedItems: likedItems, friendIDs: friendIDs) {
                     self.isLoading = false
                 }
@@ -83,7 +85,7 @@ struct MatchView: View {
     }
     
     private func findMatchedMovies(userID: String, likedItems: [Int], friendIDs: [String], completion: @escaping () -> Void) {
-        var matchedMovieIDs: [Int: String] = [:] // Dictionary to store matched movie IDs and matched friend IDs
+        var matchedMovieIDs: [Int: [String]] = [:] // Dictionary to store matched movie IDs and matched friend IDs
         let dispatchGroup = DispatchGroup()
         
         for friendID in friendIDs {
@@ -97,14 +99,17 @@ struct MatchView: View {
                     return
                 }
                 guard let friendData = friendSnapshot?.data(),
-                      let friendLikedItems = friendData["likedItems"] as? [Int] else {
+                      let friendLikedItems = friendData["likedMovies"] as? [Int] else {
                     print("Friend data not found or liked items not available.")
                     return
                 }
                 // Compare liked movies of user and friend to find matches
                 for movieID in friendLikedItems {
                     if likedItems.contains(movieID) {
-                        matchedMovieIDs[movieID] = friendID
+                        if matchedMovieIDs[movieID] == nil {
+                                                matchedMovieIDs[movieID] = [String]()
+                                            }
+                                            matchedMovieIDs[movieID]?.append(friendID)
                     }
                 }
             }
@@ -115,60 +120,65 @@ struct MatchView: View {
                 completion()
                 return
             }
-            for (movieID, friendID) in matchedMovieIDs {
-                fetchMovieDetail(for: movieID, matchedFriendID: friendID) {
-                    completion()
+            let uniqueMovieIDs = Set(matchedMovieIDs.keys)
+            let totalMovies = uniqueMovieIDs.count
+            var processedMovies = 0
+
+            for (movieID, matchedFriendIDs) in matchedMovieIDs {
+                if matchedFriendIDs.contains(userId) { // Filter matches by userId
+                    fetchMovieDetail(for: movieID, matchedFriendIDs: matchedFriendIDs) {
+                        processedMovies += 1
+                        if processedMovies == totalMovies {
+                            completion()
+                        }
+                    }
+                } else {
+                    processedMovies += 1
+                    if processedMovies == totalMovies {
+                        completion()
+                    }
                 }
             }
         }
     }
-    private func fetchMovieDetail(for movieID: Int, matchedFriendID: String, completion: @escaping () -> Void) {
+
+    private func fetchMovieDetail(for movieID: Int, matchedFriendIDs: [String], completion: @escaping () -> Void) {
         let apiKey = "APIkey"
-        let urlString = "https://api.themoviedb.org/3/movie/\(movieID)"
-        let parameters: [String: Any] = [
-            "api_key": apiKey,
-            "language": "en-US"
-        ]
+        let urlString = "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US"
         
-        guard let url = URL(string: urlString),
-              var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+        guard let url = URL(string: urlString) else {
             print("Invalid URL")
             completion()
             return
         }
-        components.queryItems = parameters.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
         
-        guard let finalURL = components.url else {
-            print("Failed to construct URL")
-            completion()
-            return
-        }
-        
-        URLSession.shared.dataTask(with: finalURL) { data, response, error in
+        URLSession.shared.dataTask(with: url) { data, response, error in
             if let data = data {
                 do {
                     let decoder = JSONDecoder()
-                    // Decode the response into a dictionary
-                    guard let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
-                        print("Failed to decode JSON")
-                        completion()
-                        return
-                    }
+                    var movieDetail = try decoder.decode(MovieDetails.self, from: data)
                     
                     // Extract the poster path from the JSON dictionary
-                    if let posterPath = jsonResponse["poster_path"] as? String {
-                        var movieDetail = try decoder.decode(MovieDetails.self, from: data)
+                    let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                    if let posterPath = jsonResponse?["poster_path"] as? String {
                         movieDetail.posterPath = posterPath
-                        // Add matched friend's username to movie detail
-                        fetchUsername(for: matchedFriendID) { username in
+                    }
+                    
+                    // Add matched friend's username to movie detail
+                    let dispatchGroup = DispatchGroup()
+                    for friendID in matchedFriendIDs {
+                        dispatchGroup.enter()
+                        fetchUsername(for: friendID) { username in
                             movieDetail.matchedFriendUsername = username
                             DispatchQueue.main.async {
-                                self.matchedMovies.append(movieDetail)
+                                if !self.matchedMovies.contains(where: { $0.id == movieDetail.id }) {
+                                    self.matchedMovies.append(movieDetail)
+                                }
+                                dispatchGroup.leave()
                             }
-                            completion()
                         }
-                    } else {
-                        print("Poster path not found in JSON response")
+                    }
+                    dispatchGroup.notify(queue: .main) {
                         completion()
                     }
                 } catch {
@@ -181,6 +191,7 @@ struct MatchView: View {
             }
         }.resume()
     }
+
 
     
     private func fetchUsername(for friendID: String, completion: @escaping (String) -> Void) {
@@ -253,19 +264,7 @@ struct MovieDetailView: View {
                     .padding()
                     .lineLimit(nil)
                 
-                if let matchedFriendUsername = movie.matchedFriendUsername {
-                    Text("Matched with: \(matchedFriendUsername)")
-                        .foregroundColor(.blue)
-                        .padding()
-                        .background(Color.gray.opacity(0.2)) // Grey background
-                        .cornerRadius(16)
-                        .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.blue, lineWidth: 1)
-                            )
-                        .font(.subheadline)
-                        .padding(.top)
-                }
+
             }
             .padding()
         }

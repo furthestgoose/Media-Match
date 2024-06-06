@@ -89,20 +89,23 @@ struct HomeView: View {
                                     .frame(width: 300, height: 150) // Ensure each card has fixed width and height
                                 }
                                 
-                                NavigationLink(destination: HomeView()) {
+                                NavigationLink(destination: TvBrowse()) {
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 25)
-                                            .fill(Color.blue)
+                                            .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                                 startPoint: .top,
+                                                                 endPoint: .bottom))
                                             .frame(width: 300, height: 150)
                                         
                                         VStack {
                                             Image(systemName: "tv")
                                                 .resizable()
+                                                .foregroundColor(.white)
                                                 .aspectRatio(contentMode: .fit)
-                                                .frame(width: 50, height: 50)
+                                                .frame(width: 100, height: 100)
                                             Text("TV Shows")
-                                                .font(.caption)
-                                                .foregroundColor(.black)
+                                                .font(.body)
+                                                .foregroundColor(.white)
                                         }
                                     }
                                     .frame(width: 300, height: 150) // Ensure each card has fixed width and height

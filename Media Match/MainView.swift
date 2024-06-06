@@ -26,7 +26,7 @@ struct MainView: View {
                     .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
                                                        startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
-                MatchView()
+                Match_Home_View()
                     .tabItem {
                         Label("Matches", systemImage: "heart.circle")
                     }
