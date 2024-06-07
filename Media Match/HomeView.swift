@@ -13,7 +13,7 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(alignment: .leading, spacing: 20) { // Adjust alignment and spacing
                 if let profile = userProfile {
                     NavigationLink(destination: UserProfileView()) {
                         VStack {
@@ -50,78 +50,110 @@ struct HomeView: View {
                                 .opacity(0.8)
                                 .foregroundColor(.black)
                         }
-                        .frame(maxWidth: .infinity, alignment: .topTrailing) // Ensure image is in top right
-                        .padding(.trailing) // Add some trailing padding for spacing
+                        .frame(maxWidth: .infinity, alignment: .topTrailing)
+                        .padding(.trailing)
                     }
                 } else {
                     ProgressView()
                 }
                 
-                ScrollView(.vertical) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Browse Content")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .padding(.horizontal)
-                            .padding(.bottom)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(spacing: 20) {
-                                NavigationLink(destination: MovieBrowse()) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                                 startPoint: .top,
-                                                                 endPoint: .bottom))
-                                            .frame(width: 300, height: 150)
-                                        
-                                        VStack {
-                                            Image(systemName: "film")
-                                                .resizable()
-                                                .foregroundColor(.white)
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 100, height: 100)
-                                            Text("Movies")
-                                                .font(.body)
-                                                .foregroundColor(.white)
-                                        }
-                                    }
-                                    .frame(width: 300, height: 150) // Ensure each card has fixed width and height
-                                }
+                Text("Browse Content") // Title for ScrollView
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 20) {
+                        NavigationLink(destination: MovieBrowse()) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                         startPoint: .top,
+                                                         endPoint: .bottom))
+                                    .frame(width: 300, height: 150)
                                 
-                                NavigationLink(destination: TvBrowse()) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                                 startPoint: .top,
-                                                                 endPoint: .bottom))
-                                            .frame(width: 300, height: 150)
-                                        
-                                        VStack {
-                                            Image(systemName: "tv")
-                                                .resizable()
-                                                .foregroundColor(.white)
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 100, height: 100)
-                                            Text("TV Shows")
-                                                .font(.body)
-                                                .foregroundColor(.white)
-                                        }
-                                    }
-                                    .frame(width: 300, height: 150) // Ensure each card has fixed width and height
+                                VStack {
+                                    Image(systemName: "film")
+                                        .resizable()
+                                        .foregroundColor(.white)
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                    Text("Movies")
+                                        .font(.body)
+                                        .foregroundColor(.white)
                                 }
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 20) // Adjusted padding to horizontal
-                            .padding(.top)
-                            .padding(.bottom, 20)
+                            .frame(width: 300, height: 150)
+                        }
+                        
+                        NavigationLink(destination: TvBrowse()) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                         startPoint: .top,
+                                                         endPoint: .bottom))
+                                    .frame(width: 300, height: 150)
+                                
+                                VStack {
+                                    Image(systemName: "tv")
+                                        .resizable()
+                                        .foregroundColor(.white)
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                    Text("TV Shows")
+                                        .font(.body)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .frame(width: 300, height: 150)
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal) // Remove unnecessary padding
+                    .padding(.leading, 20)
                 }
-                .background(Color.clear) // Set background color to transparent
+                .frame(height: 150) // Adjust height as needed
+                .background(Color.clear)
+                
+                Spacer() // Push content to the top
+                
+                Text("Coming Soon") // Title for ScrollView
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                    .foregroundColor(.gray)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 20) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 25)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                         startPoint: .top,
+                                                         endPoint: .bottom))
+                                    .frame(width: 300, height: 150)
+                                
+                                VStack {
+                                    Image(systemName: "gamecontroller")
+                                        .resizable()
+                                        .foregroundColor(.white)
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                    Text("Video Games")
+                                        .font(.body)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .frame(width: 300, height: 150)
+                        
+                    }
+                    .padding(.leading, 20)
+                }
+                .frame(height: 150) // Adjust height as needed
+                .background(Color.clear)
+                
+                Spacer()
             }
+            .padding(.top) // Add top padding to move content further up
             .onAppear {
                 fetchUserProfile()
             }
@@ -156,5 +188,4 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
-
 

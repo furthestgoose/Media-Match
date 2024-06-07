@@ -11,7 +11,7 @@ struct UserProfileView: View {
     @State private var selectedImage: UIImage?
     @State private var isUploading = false
     @State private var showDeleteAccountAlert = false // New state variable
-
+    @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
     var body: some View {
             ZStack {
                 VStack {
@@ -79,6 +79,15 @@ struct UserProfileView: View {
                                     Label("Reset your password", systemImage: "lock.open.rotation")
                                 }
                                 .buttonStyle(.plain)
+                                HStack{
+                                    Text("Theme:")
+                                    Picker("Appearance", selection: $appearanceMode) {
+                                        ForEach(AppearanceMode.allCases) { mode in
+                                            Text(mode.rawValue).tag(mode.rawValue)
+                                        }
+                                    }
+                                    .pickerStyle(SegmentedPickerStyle())
+                                }
                             }
                             
                             Section (header: Label("Danger Zone", systemImage: "exclamationmark.triangle") .foregroundColor(.red)){

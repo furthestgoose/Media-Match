@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Network
 
 struct MainView: View {
+    @ObservedObject private var networkMonitor = NetworkMonitor()
     var body: some View {
             TabView {
                 HomeView()
@@ -35,7 +37,10 @@ struct MainView: View {
                                                        startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
             }
+            .disabled(!networkMonitor.isConnected)
+            .noInternetOverlay()
         }
+        
 }
 
 #Preview {

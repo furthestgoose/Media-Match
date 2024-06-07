@@ -18,13 +18,28 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 @main
 struct Media_MatchApp: App {
+    @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var authService = AuthService()
+    @StateObject var networkMonitor = NetworkMonitor()
+    
     var body: some Scene {
         WindowGroup {
             StartView()
+                .preferredColorScheme(currentColorScheme)
                 .environmentObject(authService)
+                .environmentObject(networkMonitor)
+        }
+    }
+
+    private var currentColorScheme: ColorScheme? {
+        switch AppearanceMode(rawValue: appearanceMode) ?? .system {
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        case .system:
+            return nil
         }
     }
 }
-

@@ -1,4 +1,5 @@
 import SwiftUI
+import Network
 
 struct WelcomeView: View {
     @State private var email: String = ""
@@ -8,6 +9,7 @@ struct WelcomeView: View {
     @State private var emailErrorMessage: String? = nil
     @State private var passwordErrorMessage: String? = nil
     @EnvironmentObject var authService: AuthService
+    @ObservedObject private var networkMonitor = NetworkMonitor()
     
     var body: some View {
         GeometryReader { geometry in
@@ -137,6 +139,8 @@ struct WelcomeView: View {
                 }
             }
         }
+        .disabled(!networkMonitor.isConnected)
+        .noInternetOverlay()
     }
 }
 

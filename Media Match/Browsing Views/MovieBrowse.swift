@@ -849,117 +849,118 @@ struct MovieCardView: View {
     let card: CardData
     let onLike: () -> Void
     let onDislike: () -> Void
-    
+
     @State private var isExpanded = false
-    
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
                 .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
                                      startPoint: .top,
                                      endPoint: .bottom))
-            VStack {
-                if let posterPath = card.posterPath {
-                    if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 300, height: 300)
-                            case .failure(let error):
-                                Text("Error loading image: \(error.localizedDescription)")
-                                    .foregroundColor(.red)
-                            case .empty:
-                                ProgressView()
-                                    .frame(width: 300, height: 300)
-                            @unknown default:
-                                Color.gray
-                                    .frame(width: 300, height: 300)
+            ScrollView {
+                VStack(alignment: .leading) {
+                    if let posterPath = card.posterPath {
+                        if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 300, height: 300)
+                                case .failure(let error):
+                                    Text("Error loading image: \(error.localizedDescription)")
+                                        .foregroundColor(.red)
+                                case .empty:
+                                    ProgressView()
+                                        .frame(width: 300, height: 300)
+                                @unknown default:
+                                    Color.gray
+                                        .frame(width: 300, height: 300)
+                                }
                             }
+                        } else {
+                            Text("Invalid image URL")
+                                .foregroundColor(.red)
                         }
                     } else {
-                        Text("Invalid image URL")
+                        Text("No poster available")
                             .foregroundColor(.red)
                     }
-                } else {
-                    Text("No poster available")
-                        .foregroundColor(.red)
-                }
-                
-                Text(card.title)
-                    .font(.title)
-                    .padding(.top)
-                    .foregroundColor(.white)
-                
-                HStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text("Score: \(card.score, specifier: "%.1f")")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text("\(card.releaseYear)")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 30)
-                        .overlay(
-                            Text(" \(card.ageRating)")
-                                .foregroundColor(.white)
-                                .font(.subheadline)
-                        )
-                }
-                .padding(.top)
-                
-                Text(card.description)
+
+                    Text(card.title)
+                        .font(.title)
+                        .padding(.top)
+                        .foregroundColor(.white)
+
+                    HStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 30)
+                            .overlay(
+                                Text("Score: \(card.score, specifier: "%.1f")")
                                     .foregroundColor(.white)
-                                    .font(.body)
-                                    .padding()
-                                    .lineLimit(isExpanded ? nil : 8) // Adjust the line limit as needed
-                                    .onTapGesture {
-                                        withAnimation {
-                                            isExpanded.toggle()
-                                        }
-                                    }
-                
-                HStack {
-                    Button(action: {
-                        onDislike()
-                    }) {
-                        Image(systemName: "x.circle")
-                            .font(.system(size: 40))
+                                    .font(.subheadline)
+                            )
+
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 30)
+                            .overlay(
+                                Text("\(card.releaseYear)")
+                                    .foregroundColor(.white)
+                                    .font(.subheadline)
+                            )
+
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 30)
+                            .overlay(
+                                Text(" \(card.ageRating)")
+                                    .foregroundColor(.white)
+                                    .font(.subheadline)
+                            )
                     }
-                    .foregroundColor(.red)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        onLike()
-                    }) {
-                        Image(systemName: "checkmark.circle")
-                            .font(.system(size: 40))
+                    .padding(.top)
+
+                    Text(card.description)
+                        .foregroundColor(.white)
+                        .font(.body)
+                        .padding()
+                        .lineLimit(isExpanded ? nil : 5)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation {
+                                isExpanded.toggle()
+                            }
+                        }
+
+                    HStack {
+                        Button(action: {
+                            onDislike()
+                        }) {
+                            Image(systemName: "x.circle")
+                                .font(.system(size: 40))
+                        }
+                        .foregroundColor(.red)
+
+                        Spacer()
+
+                        Button(action: {
+                            onLike()
+                        }) {
+                            Image(systemName: "checkmark.circle")
+                                .font(.system(size: 40))
+                        }
+                        .foregroundColor(.green)
                     }
-                    .foregroundColor(.green)
+                    .padding()
                 }
                 .padding()
             }
-            .padding()
-            .frame(maxWidth: 400)
-            .background(Color.clear) // Ensure the VStack respects the frame size
         }
-        .frame(maxWidth: 400)
+        .frame(maxWidth: 400, maxHeight: .infinity)
     }
 }
 
