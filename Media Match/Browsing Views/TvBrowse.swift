@@ -179,13 +179,16 @@ struct TvBrowse: View {
     private let userProfilesCollection = "userProfiles"
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                VStack {
-                    ZStack {
-                        ForEach(currentCards) { card in
-                            TvShowCardView(card: card, onLike: { offset = CGSize(width: 500, height: 0); handleSwipeRight(for: card); removeCard() },
-                                           onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
+        GeometryReader { geometry in
+            let isIPad = geometry.size.width >= 748
+            let scale = isIPad ? 1.5 : 1.0
+            NavigationStack {
+                ZStack {
+                    VStack {
+                        ZStack {
+                            ForEach(currentCards) { card in
+                                TvShowCardView(card: card, onLike: { offset = CGSize(width: 500, height: 0); handleSwipeRight(for: card); removeCard() },
+                                               onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
                                 .offset(x: card.id == currentCards.last?.id ? offset.width : 0, y: 0)
                                 .rotationEffect(.degrees(card.id == currentCards.last?.id ? rotation : 0))
                                 .scaleEffect(card.id == currentCards.last?.id ? 1 : 0.95)
@@ -218,21 +221,31 @@ struct TvBrowse: View {
                                             }
                                         }
                                 )
+                            }
+                        }
+                        .frame(
+                            width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
+                            height: isIPad ? geometry.size.height * 0.8 : geometry.size.height,
+                            alignment: .center
+                        )
+                        .scaleEffect(scale)
+                    }
+                        .padding()
+                        .onAppear {
+                            fetchInitialShows()
                         }
                     }
-                    .padding()
-                    .onAppear {
-                        fetchInitialShows()
+                    
+                    if showIntroduction {
+                        IntroductionView(onDismiss: {
+                            showIntroduction = false
+                            UserDefaults.standard.set(true, forKey: "hasSeenIntroduction")
+                        })
                     }
                 }
-                
-                if showIntroduction {
-                    IntroductionView(onDismiss: {
-                        showIntroduction = false
-                        UserDefaults.standard.set(true, forKey: "hasSeenIntroduction")
-                    })
-                }
-            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+                        .background(Color.white)
+                        .ignoresSafeArea()
             .toolbar {
                 
                 ToolbarItem(placement: .topBarTrailing){
@@ -650,7 +663,7 @@ struct TvBrowse: View {
             let likedShowIDSet = Set(likedShowIDs)
             let dislikedShowIDSet = Set(dislikedShowIDs)
 
-            let apiKey = "APIkey"
+            let apiKey = "009613fd608f174b8bde1c5e00e56640"
             let urlString = "https://api.themoviedb.org/3/discover/tv"
 
             var parameters: [String: Any] = [
@@ -716,7 +729,7 @@ struct TvBrowse: View {
     }
     
     private func fetchShowDetails(showIDs: [Int], completion: @escaping ([Show]) -> Void) {
-                let apiKey = "APIkey"
+                let apiKey = "009613fd608f174b8bde1c5e00e56640"
                 let baseURL = "https://api.themoviedb.org/3/tv/"
                 let parameters: [String: Any] = [
                     "api_key": apiKey,
@@ -826,7 +839,7 @@ struct TvShowCardView: View {
                                      startPoint: .top,
                                      endPoint: .bottom))
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack() {
                     if let posterPath = card.posterPath {
                         if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
                             AsyncImage(url: url) { phase in
@@ -927,7 +940,7 @@ struct TvShowCardView: View {
                 .padding()
             }
         }
-        .frame(maxWidth: 400, maxHeight: .infinity)
+        .frame(maxWidth: 400, maxHeight: 700)
     }
 }
                             // TMDB response structs

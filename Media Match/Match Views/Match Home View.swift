@@ -17,7 +17,7 @@ struct Match_Home_View: View {
     @StateObject private var friendViewModel = FriendViewModel()
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.theme
                     .ignoresSafeArea()

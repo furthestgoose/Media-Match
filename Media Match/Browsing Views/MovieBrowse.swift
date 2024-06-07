@@ -179,47 +179,57 @@ struct MovieBrowse: View {
     private let userProfilesCollection = "userProfiles"
     
     var body: some View {
-        NavigationView {
+        GeometryReader { geometry in
+            let isIPad = geometry.size.width >= 748
+            let scale = isIPad ? 1.5 : 1.0
+        NavigationStack {
             ZStack {
                 VStack {
                     ZStack {
                         ForEach(currentCards) { card in
                             MovieCardView(card: card, onLike: { offset = CGSize(width: 500, height: 0); handleSwipeRight(for: card); removeCard() },
-                                     onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
-                                .offset(x: card.id == currentCards.last?.id ? offset.width : 0, y: 0)
-                                .rotationEffect(.degrees(card.id == currentCards.last?.id ? rotation : 0))
-                                .scaleEffect(card.id == currentCards.last?.id ? 1 : 0.95)
-                                .animation(.spring(), value: offset)
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { value in
-                                            withAnimation(.linear(duration: 0.2)) {
-                                                offset = value.translation
-                                                rotation = Double(value.translation.width / 10)
+                                          onDislike: { offset = CGSize(width: -500, height: 0); handleSwipeLeft(for: card); removeCard() })
+                            .offset(x: card.id == currentCards.last?.id ? offset.width : 0, y: 0)
+                            .rotationEffect(.degrees(card.id == currentCards.last?.id ? rotation : 0))
+                            .scaleEffect(card.id == currentCards.last?.id ? 1 : 0.95)
+                            .animation(.spring(), value: offset)
+                            .gesture(
+                                DragGesture()
+                                    .onChanged { value in
+                                        withAnimation(.linear(duration: 0.2)) {
+                                            offset = value.translation
+                                            rotation = Double(value.translation.width / 10)
+                                        }
+                                    }
+                                    .onEnded { value in
+                                        withAnimation(.spring()) {
+                                            if value.translation.width > 100 {
+                                                // Swipe right
+                                                offset = CGSize(width: 500, height: 0)
+                                                handleSwipeRight(for: card)
+                                                removeCard()
+                                            } else if value.translation.width < -100 {
+                                                // Swipe left
+                                                offset = CGSize(width: -500, height: 0)
+                                                handleSwipeLeft(for: card)
+                                                removeCard()
+                                            } else {
+                                                // Reset card position
+                                                offset = .zero
+                                                rotation = 0
                                             }
                                         }
-                                        .onEnded { value in
-                                            withAnimation(.spring()) {
-                                                if value.translation.width > 100 {
-                                                    // Swipe right
-                                                    offset = CGSize(width: 500, height: 0)
-                                                    handleSwipeRight(for: card)
-                                                    removeCard()
-                                                } else if value.translation.width < -100 {
-                                                    // Swipe left
-                                                    offset = CGSize(width: -500, height: 0)
-                                                    handleSwipeLeft(for: card)
-                                                    removeCard()
-                                                } else {
-                                                    // Reset card position
-                                                    offset = .zero
-                                                    rotation = 0
-                                                }
-                                            }
-                                        }
-                                )
+                                    }
+                            )
                         }
                     }
+                    .frame(
+                                            width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
+                                            height: isIPad ? geometry.size.height * 0.8 : geometry.size.height,
+                                            alignment: .center
+                                        )
+                                        .scaleEffect(scale)
+                }
                     .padding()
                     .onAppear {
                         fetchInitialMovies()
@@ -233,6 +243,9 @@ struct MovieBrowse: View {
                     })
                 }
             }
+        .frame(width: geometry.size.width, height: geometry.size.height)
+                    .background(Color.white)
+                    .ignoresSafeArea()
             .toolbar {
                 
                 ToolbarItem(placement: .topBarTrailing){
@@ -656,7 +669,7 @@ struct MovieBrowse: View {
             let likedMovieIDSet = Set(likedMovieIDs)
             let dislikedMovieIDSet = Set(dislikedMovieIDs)
 
-            let apiKey = "APIkey"
+            let apiKey = "009613fd608f174b8bde1c5e00e56640"
             let urlString = "https://api.themoviedb.org/3/discover/movie"
 
             var parameters: [String: Any] = [
@@ -721,7 +734,7 @@ struct MovieBrowse: View {
         }
     }
     private func fetchMovieDetails(movieIDs: [Int], completion: @escaping ([Movie]) -> Void) {
-        let apiKey = "APIkey"
+        let apiKey = "009613fd608f174b8bde1c5e00e56640"
         let baseURL = "https://api.themoviedb.org/3/movie/"
         let parameters: [String: Any] = [
             "api_key": apiKey,
@@ -859,7 +872,7 @@ struct MovieCardView: View {
                                      startPoint: .top,
                                      endPoint: .bottom))
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack() {
                     if let posterPath = card.posterPath {
                         if let url = URL(string: "https://image.tmdb.org/t/p/original\(posterPath)") {
                             AsyncImage(url: url) { phase in
@@ -960,7 +973,7 @@ struct MovieCardView: View {
                 .padding()
             }
         }
-        .frame(maxWidth: 400, maxHeight: .infinity)
+        .frame(maxWidth: 400, maxHeight: 700)
     }
 }
 

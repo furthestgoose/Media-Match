@@ -12,119 +12,122 @@ struct HomeView: View {
     @State private var isUploading = false
     
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 20) { // Adjust alignment and spacing
-                if let profile = userProfile {
-                    NavigationLink(destination: UserProfileView()) {
-                        VStack {
-                            if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
-                                AsyncImage(url: url) { phase in
-                                    switch phase {
-                                    case .success(let image):
-                                        image
+        GeometryReader { geometry in
+            let isIPad = geometry.size.width >= 748
+            let scale = isIPad ? 1.2 : 1.0
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 20) { // Adjust alignment and spacing
+                    if let profile = userProfile {
+                        NavigationLink(destination: UserProfileView()) {
+                            VStack {
+                                if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
+                                    AsyncImage(url: url) { phase in
+                                        switch phase {
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 50, height: 50)
+                                                .clipShape(Circle())
+                                        case .failure(_):
+                                            Image("default-profile")
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 50, height: 50)
+                                                .clipShape(Circle())
+                                        case .empty:
+                                            ProgressView()
+                                        @unknown default:
+                                            EmptyView()
+                                        }
+                                    }
+                                } else {
+                                    Image("default-profile")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                }
+                                Text("Profile")
+                                    .font(.caption)
+                                    .opacity(0.8)
+                                    .foregroundColor(.black)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .topTrailing)
+                            .padding(.trailing)
+                        }
+                    } else {
+                        ProgressView()
+                    }
+                    
+                    Text("Browse Content") // Title for ScrollView
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 20) {
+                            NavigationLink(destination: MovieBrowse()) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                             startPoint: .top,
+                                                             endPoint: .bottom))
+                                        .frame(width: 300, height: 150)
+                                    
+                                    VStack {
+                                        Image(systemName: "film")
                                             .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 50, height: 50)
-                                            .clipShape(Circle())
-                                    case .failure(_):
-                                        Image("default-profile")
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 50, height: 50)
-                                            .clipShape(Circle())
-                                    case .empty:
-                                        ProgressView()
-                                    @unknown default:
-                                        EmptyView()
+                                            .foregroundColor(.white)
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100, height: 100)
+                                        Text("Movies")
+                                            .font(.body)
+                                            .foregroundColor(.white)
                                     }
                                 }
-                            } else {
-                                Image("default-profile")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
+                                .frame(width: 300, height: 150)
                             }
-                            Text("Profile")
-                                .font(.caption)
-                                .opacity(0.8)
-                                .foregroundColor(.black)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .topTrailing)
-                        .padding(.trailing)
-                    }
-                } else {
-                    ProgressView()
-                }
-                
-                Text("Browse Content") // Title for ScrollView
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 20) {
-                        NavigationLink(destination: MovieBrowse()) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                         startPoint: .top,
-                                                         endPoint: .bottom))
-                                    .frame(width: 300, height: 150)
-                                
-                                VStack {
-                                    Image(systemName: "film")
-                                        .resizable()
-                                        .foregroundColor(.white)
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 100, height: 100)
-                                    Text("Movies")
-                                        .font(.body)
-                                        .foregroundColor(.white)
+                            
+                            NavigationLink(destination: TvBrowse()) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
+                                                             startPoint: .top,
+                                                             endPoint: .bottom))
+                                        .frame(width: 300, height: 150)
+                                    
+                                    VStack {
+                                        Image(systemName: "tv")
+                                            .resizable()
+                                            .foregroundColor(.white)
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100, height: 100)
+                                        Text("TV Shows")
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                    }
                                 }
+                                .frame(width: 300, height: 150)
                             }
-                            .frame(width: 300, height: 150)
                         }
-                        
-                        NavigationLink(destination: TvBrowse()) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                         startPoint: .top,
-                                                         endPoint: .bottom))
-                                    .frame(width: 300, height: 150)
-                                
-                                VStack {
-                                    Image(systemName: "tv")
-                                        .resizable()
-                                        .foregroundColor(.white)
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 100, height: 100)
-                                    Text("TV Shows")
-                                        .font(.body)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                            .frame(width: 300, height: 150)
-                        }
+                        .padding(.leading, 20)
                     }
-                    .padding(.leading, 20)
-                }
-                .frame(height: 150) // Adjust height as needed
-                .background(Color.clear)
-                
-                Spacer() // Push content to the top
-                
-                Text("Coming Soon") // Title for ScrollView
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                    .foregroundColor(.gray)
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 20) {
+                    .frame(height: 150) // Adjust height as needed
+                    .background(Color.clear)
+                    
+                    Spacer() // Push content to the top
+                    
+                    Text("Coming Soon") // Title for ScrollView
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                        .foregroundColor(.gray)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 20) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 25)
                                     .fill(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
@@ -144,18 +147,21 @@ struct HomeView: View {
                                 }
                             }
                             .frame(width: 300, height: 150)
-                        
+                            
+                        }
+                        .padding(.leading, 20)
                     }
-                    .padding(.leading, 20)
+                    .frame(height: 150) // Adjust height as needed
+                    .background(Color.clear)
+                    
+                    Spacer()
                 }
-                .frame(height: 150) // Adjust height as needed
-                .background(Color.clear)
-                
-                Spacer()
-            }
-            .padding(.top) // Add top padding to move content further up
-            .onAppear {
-                fetchUserProfile()
+                .padding(.top) // Add top padding to move content further up
+                .onAppear {
+                    fetchUserProfile()
+                }
+                .frame(maxWidth: isIPad ? geometry.size.width * 0.8 : .infinity, maxHeight: isIPad ? geometry.size.height * 0.8 : .infinity)
+                .scaleEffect(scale)
             }
         }
     }

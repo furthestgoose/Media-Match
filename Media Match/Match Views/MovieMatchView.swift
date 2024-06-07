@@ -19,24 +19,37 @@ struct MovieMatchView: View {
     @State private var hasFetchedData = false // New state to prevent multiple fetches
 
     var body: some View {
-        VStack {
-            if isLoading {
-                ProgressView()
-                    .padding()
-            } else if matchedMovies.isEmpty {
-                Text("No Movie matches found")
-                    .foregroundColor(.gray)
-                    .padding()
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 20) {
-                        ForEach(matchedMovies, id: \.id) { movie in
-                            MovieDetailView(movie: movie)
+        GeometryReader { geometry in
+            let isIPad = geometry.size.width >= 748
+            let scale = isIPad ? 1.5 : 1.0
+            VStack {
+                if isLoading {
+                    ProgressView()
+                        .padding()
+                } else if matchedMovies.isEmpty {
+                    Text("No Movie matches found")
+                        .foregroundColor(.gray)
+                        .padding()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 20) {
+                            ForEach(matchedMovies, id: \.id) { movie in
+                                MovieDetailView(movie: movie)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
             }
+            .frame(
+                width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
+                height: isIPad ? geometry.size.height * 0.8 : geometry.size.height
+            )
+            .scaleEffect(scale)
+            .position(
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2
+            )
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
@@ -143,7 +156,7 @@ struct MovieMatchView: View {
     }
 
     private func fetchMovieDetail(for movieID: Int, matchedFriendIDs: [String], completion: @escaping () -> Void) {
-        let apiKey = "APIkey"
+        let apiKey = "009613fd608f174b8bde1c5e00e56640"
         let urlString = "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US"
         
         guard let url = URL(string: urlString) else {
