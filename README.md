@@ -7,7 +7,7 @@
 <img width="588" alt="Screenshot 2024-06-22 at 17 09 09" src="https://github.com/furthestgoose/Media-Match/assets/77462614/19d15878-8254-49c7-b2d8-2ff3e9ed65a9">
 
 
-Media Match is a social app designed for discovering TV shows and movies based on your preferences and those of your friends. Users can like and dislike content to receive personalized recommendations and explore what their friends enjoy. It transforms entertainment discovery into a collaborative experience, enhancing how users connect over shared interests.
+Media Match is a social app designed for discovering TV shows and movies based on your preferences and those of your friends. Users can like and dislike content to receive personalized recommendations and explore what their friends enjoy. It transforms entertainment discovery into a collaborative experience, enhancing how users connect over shared interests.run 
 
 # Screenshots
 
