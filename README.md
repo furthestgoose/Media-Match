@@ -28,30 +28,39 @@ Dark Mode Settings:
 <img width="394" alt="Screenshot 2024-06-22 at 17 01 45" src="https://github.com/furthestgoose/Media-Match/assets/77462614/1326a724-ef6c-4f52-8810-329a98b96fcc">
 
 Add Friend:
+
 <img width="394" alt="Screenshot 2024-06-22 at 17 02 33" src="https://github.com/furthestgoose/Media-Match/assets/77462614/f22952dd-5e01-4614-bc8a-45164b6b3b2c">
 
 Incoming Request:
+
 <img width="392" alt="Screenshot 2024-06-22 at 17 03 05" src="https://github.com/furthestgoose/Media-Match/assets/77462614/3a522783-e1fd-467f-9c18-472a8b8780cd">
 
 Movie Browse View:
+
 <img width="399" alt="Screenshot 2024-06-22 at 17 04 33" src="https://github.com/furthestgoose/Media-Match/assets/77462614/5497686c-40a1-405a-ad77-137fc5dc3f48">
 
 TV Show Browse View:
+
 <img width="400" alt="Screenshot 2024-06-22 at 17 04 49" src="https://github.com/furthestgoose/Media-Match/assets/77462614/9484a2dc-fed7-4a25-9fce-208ab8b3b1fd">
 
 Select Friend to view matches with:
+
 <img width="394" alt="Screenshot 2024-06-22 at 17 07 20" src="https://github.com/furthestgoose/Media-Match/assets/77462614/7f88f562-26a1-433a-866f-acdc337953db">
 
 Select Category to view:
+
 <img width="391" alt="Screenshot 2024-06-22 at 17 07 32" src="https://github.com/furthestgoose/Media-Match/assets/77462614/78528fd4-20b8-4949-8bc2-b1c6dcf5e864">
 
 Movie Match:
+
 <img width="394" alt="Screenshot 2024-06-22 at 17 07 44" src="https://github.com/furthestgoose/Media-Match/assets/77462614/0d66ae01-584c-4c10-9cbf-d6c2c51ede17">
 
 IPad Login view:
+
 <img width="591" alt="Screenshot 2024-06-22 at 17 08 40" src="https://github.com/furthestgoose/Media-Match/assets/77462614/c4a6aee2-d85c-4105-9f45-2020785ae3dc">
 
 IPad Match view:
+
 <img width="588" alt="Screenshot 2024-06-22 at 17 09 09" src="https://github.com/furthestgoose/Media-Match/assets/77462614/241bdca4-35b6-4a41-9248-9eaf44a6b757">
 
 # Install Instructions
