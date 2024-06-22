@@ -1,0 +1,13 @@
+{
+    "project": {
+        "name": "Media Match",
+        "version": "1.0.0",
+        "repository": "https://github.com/furthestgoose/Media-Match"
+    },
+    "styles": {
+      "theme": "axodark"
+    },
+    "components": {
+      "changelog": false
+    }
+  }

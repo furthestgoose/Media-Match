@@ -1,2 +1,46 @@
+<div class="oranda-hide">
 # Media Match
-media match is an ios app I am creating, currently oauth2 has been implemented, users can add a profile picture and username as well as delete their account.Friend system has now been added, users can request, add and delete each from their friend lists.Users are now able to match movies with each other, browse movies and use filters on that browse section.Tv shows have been added and the match screen has been redesigned. To-do: add more info to match cards, rework home screen, handle poor/no network connection use case, fix bug with descriptions not expanding, add dark mode toggle to settings.
+</div>
+
+insert main pic here
+
+Media Match is a social app designed for discovering TV shows and movies based on your preferences and those of your friends. Users can like and dislike content to receive personalized recommendations and explore what their friends enjoy. It transforms entertainment discovery into a collaborative experience, enhancing how users connect over shared interests.
+
+# Screenshots
+
+
+
+# Install Instructions
+
+1. sign up for an account at [tmdb](https://www.themoviedb.org/?language=en-GB)
+2. register for an apiKey
+3. replace all instances of apiKey with your apiKey
+4. link the app to a firebase project with google sso turned on
+5. insert the plist to the project
+6. using xcode build the app for either a physical or virtual Ipad/ Iphone
+
+# Missing Features
+
+- Notifications 
+- Apple SSO
+- In App Purchases
+- Videogames tab
+
+most of these require an apple developer account unfortunately
+
+## Contributing
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+
+## Credits
+
+This project utilizes the following resources:
+
+- Movie Data from [TMDB](https://www.themoviedb.org/?language=en-GB).
+- Back End provided by [Firebase](https://firebase.google.com/).
+- Release website built using [Oranda](https://opensource.axo.dev/oranda/)
+
+## License
+
+This project is licensed under the [Creative Commons License](https://github.com/furthestgoose/Media-Match/blob/master/LICENSE).
+
