@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06593DD12C0F190500CD8EC8 /* MovieBrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06593DD02C0F190500CD8EC8 /* MovieBrowseView.swift */; };
-		06593DD32C0F1A2200CD8EC8 /* SwipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06593DD22C0F1A2200CD8EC8 /* SwipeCardView.swift */; };
+		060B3B932C11CEDC00983A99 /* Match Home View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B3B922C11CEDC00983A99 /* Match Home View.swift */; };
+		060B3B952C11D15200983A99 /* Category_View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B3B942C11D15200983A99 /* Category_View.swift */; };
+		060B3B972C11F03500983A99 /* TvBrowse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B3B962C11F03500983A99 /* TvBrowse.swift */; };
+		060B3B992C11F99000983A99 /* tvMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060B3B982C11F99000983A99 /* tvMatchView.swift */; };
+		06593DD32C0F1A2200CD8EC8 /* MovieBrowse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06593DD22C0F1A2200CD8EC8 /* MovieBrowse.swift */; };
 		06593DD52C0F84F300CD8EC8 /* IntroductionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06593DD42C0F84F300CD8EC8 /* IntroductionView.swift */; };
 		067784F22C0E4ED900032942 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067784F12C0E4ED900032942 /* OnboardingView.swift */; };
 		067784F52C0E506C00032942 /* OnBoardingPage1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067784F42C0E506C00032942 /* OnBoardingPage1.swift */; };
@@ -47,7 +50,13 @@
 		06B255992C0C76700072D628 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B255982C0C76700072D628 /* UserProfileView.swift */; };
 		06B2559B2C0C84F30072D628 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 06B2559A2C0C84F30072D628 /* FirebaseStorage */; };
 		06B2559E2C0C90350072D628 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 06B2559D2C0C90350072D628 /* SDWebImageSwiftUI */; };
-		06C7DD772C0E05AD0017601E /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C7DD762C0E05AD0017601E /* MatchView.swift */; };
+		06BC67D32C271D7000959C95 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 06BC67D22C271D7000959C95 /* GoogleMobileAds */; };
+		06BC67D72C271F4B00959C95 /* bannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC67D62C271F4B00959C95 /* bannerView.swift */; };
+		06C0D5F42C130DD700A16E64 /* AppearanceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C0D5F32C130DD700A16E64 /* AppearanceMode.swift */; };
+		06C0D5F62C1311C300A16E64 /* Network Monitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C0D5F52C1311C300A16E64 /* Network Monitor.swift */; };
+		06C0D5F82C1311E200A16E64 /* NoInternetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C0D5F72C1311E200A16E64 /* NoInternetView.swift */; };
+		06C0D5FA2C13129200A16E64 /* NoInternetOverlayModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C0D5F92C13129200A16E64 /* NoInternetOverlayModifier.swift */; };
+		06C7DD772C0E05AD0017601E /* MovieMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C7DD762C0E05AD0017601E /* MovieMatchView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,8 +77,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		06593DD02C0F190500CD8EC8 /* MovieBrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieBrowseView.swift; sourceTree = "<group>"; };
-		06593DD22C0F1A2200CD8EC8 /* SwipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCardView.swift; sourceTree = "<group>"; };
+		060B3B922C11CEDC00983A99 /* Match Home View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Match Home View.swift"; sourceTree = "<group>"; };
+		060B3B942C11D15200983A99 /* Category_View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category_View.swift; sourceTree = "<group>"; };
+		060B3B962C11F03500983A99 /* TvBrowse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TvBrowse.swift; sourceTree = "<group>"; };
+		060B3B982C11F99000983A99 /* tvMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tvMatchView.swift; sourceTree = "<group>"; };
+		06593DD22C0F1A2200CD8EC8 /* MovieBrowse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieBrowse.swift; sourceTree = "<group>"; };
 		06593DD42C0F84F300CD8EC8 /* IntroductionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroductionView.swift; sourceTree = "<group>"; };
 		067784F12C0E4ED900032942 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		067784F42C0E506C00032942 /* OnBoardingPage1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingPage1.swift; sourceTree = "<group>"; };
@@ -99,7 +111,12 @@
 		06AB7FB92C0B735000459A9E /* passwordResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = passwordResetView.swift; sourceTree = "<group>"; };
 		06B255962C0C75F70072D628 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		06B255982C0C76700072D628 /* UserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
-		06C7DD762C0E05AD0017601E /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
+		06BC67D62C271F4B00959C95 /* bannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bannerView.swift; sourceTree = "<group>"; };
+		06C0D5F32C130DD700A16E64 /* AppearanceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceMode.swift; sourceTree = "<group>"; };
+		06C0D5F52C1311C300A16E64 /* Network Monitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Network Monitor.swift"; sourceTree = "<group>"; };
+		06C0D5F72C1311E200A16E64 /* NoInternetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetView.swift; sourceTree = "<group>"; };
+		06C0D5F92C13129200A16E64 /* NoInternetOverlayModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoInternetOverlayModifier.swift; sourceTree = "<group>"; };
+		06C7DD762C0E05AD0017601E /* MovieMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieMatchView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +129,7 @@
 				06AB7FA12C0B3A4F00459A9E /* FirebaseCrashlytics in Frameworks */,
 				06AB7FA82C0B3CD400459A9E /* GoogleSignInSwift in Frameworks */,
 				06AB7FA32C0B3AF700459A9E /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
+				06BC67D32C271D7000959C95 /* GoogleMobileAds in Frameworks */,
 				06AB7F9F2C0B3A4F00459A9E /* FirebaseAuth in Frameworks */,
 				06B255952C0C749B0072D628 /* FirebaseFirestoreSwift in Frameworks */,
 				06B255932C0C749B0072D628 /* FirebaseFirestore in Frameworks */,
@@ -139,11 +157,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		060B3B912C11CEB800983A99 /* Match Views */ = {
+			isa = PBXGroup;
+			children = (
+				06C7DD762C0E05AD0017601E /* MovieMatchView.swift */,
+				060B3B922C11CEDC00983A99 /* Match Home View.swift */,
+				060B3B942C11D15200983A99 /* Category_View.swift */,
+				060B3B982C11F99000983A99 /* tvMatchView.swift */,
+			);
+			path = "Match Views";
+			sourceTree = "<group>";
+		};
 		06593DCF2C0F18EA00CD8EC8 /* Browsing Views */ = {
 			isa = PBXGroup;
 			children = (
-				06593DD02C0F190500CD8EC8 /* MovieBrowseView.swift */,
-				06593DD22C0F1A2200CD8EC8 /* SwipeCardView.swift */,
+				06593DD22C0F1A2200CD8EC8 /* MovieBrowse.swift */,
+				060B3B962C11F03500983A99 /* TvBrowse.swift */,
 			);
 			path = "Browsing Views";
 			sourceTree = "<group>";
@@ -174,6 +203,11 @@
 		06AB7F612C0B37C100459A9E = {
 			isa = PBXGroup;
 			children = (
+				06BC67D62C271F4B00959C95 /* bannerView.swift */,
+				06C0D5F92C13129200A16E64 /* NoInternetOverlayModifier.swift */,
+				06C0D5F52C1311C300A16E64 /* Network Monitor.swift */,
+				06C0D5F72C1311E200A16E64 /* NoInternetView.swift */,
+				06C0D5F32C130DD700A16E64 /* AppearanceMode.swift */,
 				06593DD42C0F84F300CD8EC8 /* IntroductionView.swift */,
 				06AB7F6C2C0B37C100459A9E /* Media Match */,
 				06AB7F7D2C0B37C200459A9E /* Media MatchTests */,
@@ -195,8 +229,8 @@
 		06AB7F6C2C0B37C100459A9E /* Media Match */ = {
 			isa = PBXGroup;
 			children = (
+				060B3B912C11CEB800983A99 /* Match Views */,
 				069BC9CE2C0D00B000A63DF1 /* MainView.swift */,
-				06C7DD762C0E05AD0017601E /* MatchView.swift */,
 				06AB7F6D2C0B37C100459A9E /* Media_MatchApp.swift */,
 				06AB7FB02C0B490600459A9E /* HomeView.swift */,
 				06AB7F712C0B37C100459A9E /* Assets.xcassets */,
@@ -278,6 +312,7 @@
 				06B255942C0C749B0072D628 /* FirebaseFirestoreSwift */,
 				06B2559A2C0C84F30072D628 /* FirebaseStorage */,
 				06B2559D2C0C90350072D628 /* SDWebImageSwiftUI */,
+				06BC67D22C271D7000959C95 /* GoogleMobileAds */,
 			);
 			productName = "Media Match";
 			productReference = 06AB7F6A2C0B37C100459A9E /* Media Match.app */;
@@ -355,6 +390,7 @@
 				06AB7F992C0B397A00459A9E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				06AB7FA42C0B3CD400459A9E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				06B2559C2C0C90350072D628 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				06BC67D12C271D7000959C95 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = 06AB7F6B2C0B37C100459A9E /* Products */;
 			projectDirPath = "";
@@ -399,11 +435,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				060B3B932C11CEDC00983A99 /* Match Home View.swift in Sources */,
 				06593DD52C0F84F300CD8EC8 /* IntroductionView.swift in Sources */,
 				069BC9CD2C0CFC5A00A63DF1 /* FriendView.swift in Sources */,
-				06C7DD772C0E05AD0017601E /* MatchView.swift in Sources */,
+				060B3B972C11F03500983A99 /* TvBrowse.swift in Sources */,
+				06C7DD772C0E05AD0017601E /* MovieMatchView.swift in Sources */,
 				06AB7F6E2C0B37C100459A9E /* Media_MatchApp.swift in Sources */,
+				060B3B992C11F99000983A99 /* tvMatchView.swift in Sources */,
 				06AB7FB32C0B493500459A9E /* StartView.swift in Sources */,
+				06BC67D72C271F4B00959C95 /* bannerView.swift in Sources */,
 				067784F72C0E508000032942 /* OnBoardingPage2.swift in Sources */,
 				06AB7FBA2C0B735000459A9E /* passwordResetView.swift in Sources */,
 				06AB7FB12C0B490600459A9E /* HomeView.swift in Sources */,
@@ -411,16 +451,20 @@
 				06AB7FAF2C0B481400459A9E /* WelcomeView.swift in Sources */,
 				067784F92C0E509000032942 /* OnBoardingPage3.swift in Sources */,
 				06AB7FB72C0B4A2500459A9E /* LoginView.swift in Sources */,
-				06593DD12C0F190500CD8EC8 /* MovieBrowseView.swift in Sources */,
 				067784FB2C0E5A8F00032942 /* FeatureView.swift in Sources */,
-				06593DD32C0F1A2200CD8EC8 /* SwipeCardView.swift in Sources */,
+				06593DD32C0F1A2200CD8EC8 /* MovieBrowse.swift in Sources */,
+				06C0D5FA2C13129200A16E64 /* NoInternetOverlayModifier.swift in Sources */,
 				06AB7FB52C0B49AC00459A9E /* AuthService.swift in Sources */,
+				06C0D5F82C1311E200A16E64 /* NoInternetView.swift in Sources */,
 				06B255972C0C75F70072D628 /* UserProfile.swift in Sources */,
 				069BC9C72C0CF8F300A63DF1 /* Friend.swift in Sources */,
 				069BC9CB2C0CF94900A63DF1 /* FriendRequestSystem.swift in Sources */,
 				067784F22C0E4ED900032942 /* OnboardingView.swift in Sources */,
+				06C0D5F62C1311C300A16E64 /* Network Monitor.swift in Sources */,
 				069BC9CF2C0D00B000A63DF1 /* MainView.swift in Sources */,
 				069BC9C92C0CF91600A63DF1 /* FriendRequest.swift in Sources */,
+				060B3B952C11D15200983A99 /* Category_View.swift in Sources */,
+				06C0D5F42C130DD700A16E64 /* AppearanceMode.swift in Sources */,
 				067784F52C0E506C00032942 /* OnBoardingPage1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -582,9 +626,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Media Match/Media Match.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Media Match/Preview Content\"";
+				DEVELOPMENT_TEAM = FTC4MXFMA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Media-Match-Info.plist";
@@ -600,6 +647,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "name.adambyford.Media-Match";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -615,9 +663,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Media Match/Media Match.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Media Match/Preview Content\"";
+				DEVELOPMENT_TEAM = FTC4MXFMA7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Media-Match-Info.plist";
@@ -633,6 +684,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "name.adambyford.Media-Match";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -781,6 +833,14 @@
 				minimumVersion = 3.0.4;
 			};
 		};
+		06BC67D12C271D7000959C95 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -843,6 +903,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 06B2559C2C0C90350072D628 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		06BC67D22C271D7000959C95 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 06BC67D12C271D7000959C95 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

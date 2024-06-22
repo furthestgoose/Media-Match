@@ -35,14 +35,12 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password is at least 12 characters long
         guard password.count >= 6 else {
             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password must be at least 6 characters long."])
             completion(error)
             return
         }
         
-        // Check if the password contains at least one uppercase letter
         let uppercaseLetterRegex = ".*[A-Z]+.*"
         let uppercaseLetterTest = NSPredicate(format: "SELF MATCHES %@", uppercaseLetterRegex)
         guard uppercaseLetterTest.evaluate(with: password) else {
@@ -51,7 +49,6 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password contains at least one number
         let numberRegex = ".*[0-9]+.*"
         let numberTest = NSPredicate(format: "SELF MATCHES %@", numberRegex)
         guard numberTest.evaluate(with: password) else {
@@ -60,7 +57,6 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password contains at least one special character
         let specialCharacterRegex = ".*[!@#$&*]+.*"
         let specialCharacterTest = NSPredicate(format: "SELF MATCHES %@", specialCharacterRegex)
         guard specialCharacterTest.evaluate(with: password) else {
@@ -90,7 +86,6 @@ class AuthService: ObservableObject {
             
             Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
                 if let error = error as NSError? {
-                    // Check the error code and handle it accordingly
                     switch error.code {
                     case AuthErrorCode.emailAlreadyInUse.rawValue:
                         let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "email already in use."])
@@ -104,10 +99,8 @@ class AuthService: ObservableObject {
                     return
                 }
                 
-                // Handle successful sign in
                 print("Sign in successful!")
                 
-                // Add user data to Firestore
                 guard let userID = authResult?.user.uid else {
                     return
                 }
@@ -131,7 +124,6 @@ class AuthService: ObservableObject {
         }
     
     //MARK: - Traditional sign in
-    // Traditional sign in with password and email
     func regularSignIn(email: String, password: String, completion: @escaping (Error?) -> Void) {
         
         guard isValidEmail(email) else {
@@ -146,7 +138,6 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password contains at least one uppercase letter
         let uppercaseLetterRegex = ".*[A-Z]+.*"
         let uppercaseLetterTest = NSPredicate(format: "SELF MATCHES %@", uppercaseLetterRegex)
         guard uppercaseLetterTest.evaluate(with: password) else {
@@ -155,7 +146,6 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password contains at least one number
         let numberRegex = ".*[0-9]+.*"
         let numberTest = NSPredicate(format: "SELF MATCHES %@", numberRegex)
         guard numberTest.evaluate(with: password) else {
@@ -164,7 +154,6 @@ class AuthService: ObservableObject {
             return
         }
         
-        // Check if the password contains at least one special character
         let specialCharacterRegex = ".*[!@#$&*]+.*"
         let specialCharacterTest = NSPredicate(format: "SELF MATCHES %@", specialCharacterRegex)
         guard specialCharacterTest.evaluate(with: password) else {
@@ -175,7 +164,6 @@ class AuthService: ObservableObject {
         
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
                 if let error = error as NSError? {
-                    // Check the error code and handle it accordingly
                     switch error.code {
                     case AuthErrorCode.userNotFound.rawValue:
                         let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "email not found"])
@@ -190,7 +178,6 @@ class AuthService: ObservableObject {
                     }
                     return
                 }
-                // Handle successful sign in
                 print("Sign in successful!")
             }
     }
@@ -199,7 +186,6 @@ class AuthService: ObservableObject {
 
     
     //MARK: Regular password acount sign out.
-    // Closure has whether sign out was successful or not
     func regularSignOut(completion: @escaping (Error?) -> Void) {
         let firebaseAuth = Auth.auth()
         do {
@@ -214,14 +200,11 @@ class AuthService: ObservableObject {
     func googleSignIn() {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
 
-        // Create Google Sign In configuration object.
         let config = GIDConfiguration(clientID: clientID)
         
-        // Access the presenting view controller.
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
 
-        // Start the sign-in flow!
         GIDSignIn.sharedInstance.signIn(with: config, presenting: rootViewController) { [unowned self] user, error in
             if let error = error {
                 print("Error doing Google Sign-In, \(error)")
@@ -239,7 +222,6 @@ class AuthService: ObservableObject {
 
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
 
-            // Authenticate with Firebase
             Auth.auth().signIn(with: credential) { authResult, error in
                 if let error = error {
                     print(error.localizedDescription)
@@ -248,7 +230,6 @@ class AuthService: ObservableObject {
 
                 print("Signed in with Google")
                 
-                // Extract the part before "@" in the email to use as username
                 let emailPrefix = email.components(separatedBy: "@").first ?? ""
                 self.checkAndSaveUsername(username: emailPrefix, email: email)
             }
@@ -266,11 +247,9 @@ class AuthService: ObservableObject {
             }
 
             if let querySnapshot = querySnapshot, !querySnapshot.isEmpty {
-                // Username is already taken, append a number to make it unique
                 let newUsername = username + "\(querySnapshot.count + 1)"
                 self.saveUsernameToFirestore(username: newUsername, email: email)
             } else {
-                // Username is available, save it to Firestore
                 self.saveUsernameToFirestore(username: username, email: email)
             }
         }
@@ -308,7 +287,6 @@ class AuthService: ObservableObject {
         
         Auth.auth().sendPasswordReset(withEmail: email) { (error) in
                     if let error = error as NSError? {
-                        // Check the error code and handle it accordingly
                         switch error.code {
                         case AuthErrorCode.userNotFound.rawValue:
                             let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "email not found"])
@@ -319,7 +297,6 @@ class AuthService: ObservableObject {
                         }
                         return
                     }
-                    // Handle successful sign in
                     print("Sign in successful!")
                     let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Password reset sent"])
                     completion(error)
@@ -336,7 +313,7 @@ class AuthService: ObservableObject {
         let db = Firestore.firestore()
         let userProfilesRef = db.collection("userProfiles")
 
-        // Delete the current user's UID from the "friends" array of all other users
+
         userProfilesRef.whereField("friends", arrayContains: user.uid).getDocuments { (snapshot, error) in
             if let error = error {
                 print("Error fetching user profiles: \(error.localizedDescription)")
@@ -353,7 +330,6 @@ class AuthService: ObservableObject {
             for document in documents {
                 let userId = document.documentID
 
-                // Skip updating the current user's document
                 if userId == user.uid {
                     continue
                 }
@@ -370,7 +346,6 @@ class AuthService: ObservableObject {
             }
 
             dispatchGroup.notify(queue: .main) {
-                // Continue with the rest of the account deletion process
                 self.deleteRemainingData(for: user)
             }
         }
@@ -379,7 +354,6 @@ class AuthService: ObservableObject {
     func deleteRemainingData(for user: User) {
         let db = Firestore.firestore()
 
-        // Delete all documents in friendRequests where the current user's UID is the document name
         let friendRequestsRef = db.collection("friendRequests").document(user.uid)
         friendRequestsRef.delete { error in
             if let error = error {
@@ -389,7 +363,6 @@ class AuthService: ObservableObject {
             }
         }
 
-        // Delete all subdocuments in friendRequests where the current user's UID is the subdocument name
         let subdocumentsRef = db.collection("friendRequests").document(user.uid).collection("sent")
         subdocumentsRef.getDocuments { (snapshot, error) in
             if let error = error {
@@ -402,7 +375,6 @@ class AuthService: ObservableObject {
                 return
             }
 
-            // Iterate over the subdocuments and delete each one
             for document in documents {
                 if document.documentID == user.uid {
                     document.reference.delete { error in
@@ -416,13 +388,10 @@ class AuthService: ObservableObject {
             }
         }
 
-        // Delete profile picture from Firebase Storage
         deleteProfilePictureFromStorage(for: user)
 
-        // Delete user document from Firestore
         deleteUserDocumentFromFirestore(for: user)
 
-        // Delete user account
         user.delete { error in
             if let error = error {
                 print("Error deleting account: \(error.localizedDescription)")

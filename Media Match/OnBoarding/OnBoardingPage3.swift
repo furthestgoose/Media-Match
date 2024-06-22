@@ -32,7 +32,6 @@ struct OnBoardingPage3: View {
             Spacer()
             
             Button(action: {
-                // Update the flag in UserDefaults
                 UserDefaults.standard.set(true, forKey: "isFirstTime")
                 isFirstTime = false
             }) {

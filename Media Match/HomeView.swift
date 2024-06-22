@@ -16,7 +16,7 @@ struct HomeView: View {
             let isIPad = geometry.size.width >= 748
             let scale = isIPad ? 1.2 : 1.0
             NavigationStack {
-                VStack(alignment: .leading, spacing: 20) { // Adjust alignment and spacing
+                VStack(alignment: .leading, spacing: 20) {
                     if let profile = userProfile {
                         NavigationLink(destination: UserProfileView()) {
                             VStack {
@@ -48,10 +48,6 @@ struct HomeView: View {
                                         .frame(width: 50, height: 50)
                                         .clipShape(Circle())
                                 }
-                                Text("Profile")
-                                    .font(.caption)
-                                    .opacity(0.8)
-                                    .foregroundColor(.black)
                             }
                             .frame(maxWidth: .infinity, alignment: .topTrailing)
                             .padding(.trailing)
@@ -60,7 +56,7 @@ struct HomeView: View {
                         ProgressView()
                     }
                     
-                    Text("Browse Content") // Title for ScrollView
+                    Text("Browse Content")
                         .font(.title)
                         .fontWeight(.bold)
                         .padding(.horizontal)
@@ -151,12 +147,12 @@ struct HomeView: View {
                         }
                         .padding(.leading, 20)
                     }
-                    .frame(height: 150) // Adjust height as needed
+                    .frame(height: 150)
                     .background(Color.clear)
                     
                     Spacer()
                 }
-                .padding(.top) // Add top padding to move content further up
+                .padding(.top)
                 .onAppear {
                     fetchUserProfile()
                 }

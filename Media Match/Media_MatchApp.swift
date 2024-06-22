@@ -1,18 +1,13 @@
-//
-//  Media_MatchApp.swift
-//  Media Match
-//
-//  Created by Adam Byford on 01/06/2024.
-//
-
 import SwiftUI
 import FirebaseCore
 import FirebaseFirestore
+import GoogleMobileAds
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+    GADMobileAds.sharedInstance().start(completionHandler: nil)
     return true
   }
 }

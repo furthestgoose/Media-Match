@@ -8,15 +8,18 @@ struct ShowDetails: Codable {
     let overview: String
     var posterPath: String?
     var matchedFriendUsername: String?
+    var firstAirDate: String?
+    var voteAverage: Double?
+    var ageRating: String?
 }
 
 struct tvMatchView: View {
     var userId: String
-    @State private var userID: String? // User's ID
-    @State private var friendIDs: [String]? // IDs of the user's friends
+    @State private var userID: String? 
+    @State private var friendIDs: [String]?
     @State private var matchedShows: [ShowDetails] = []
     @State private var isLoading = false
-    @State private var hasFetchedData = false // New state to prevent multiple fetches
+    @State private var hasFetchedData = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -41,6 +44,7 @@ struct tvMatchView: View {
                     }
                 }
             }
+            .padding(.top,isIPad ? geometry.size.height * 0.10 : 0)
             .frame(
                 width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
                 height: isIPad ? geometry.size.height * 0.8 : geometry.size.height
@@ -53,7 +57,7 @@ struct tvMatchView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            if !hasFetchedData { // Ensure fetchUserData is called only once
+            if !hasFetchedData {
                 fetchUserData()
                 hasFetchedData = true
             }
@@ -86,7 +90,6 @@ struct tvMatchView: View {
             self.userID = userID
             self.friendIDs = userData["friends"] as? [String]
             
-            // Find matched shows
             if let likedItems = userData["likedShows"] as? [Int], let friendIDs = self.friendIDs {
                 findMatchedShows(userID: userID, likedItems: likedItems, friendIDs: friendIDs) {
                     self.isLoading = false
@@ -98,7 +101,7 @@ struct tvMatchView: View {
     }
     
     private func findMatchedShows(userID: String, likedItems: [Int], friendIDs: [String], completion: @escaping () -> Void) {
-        var matchedShowIDs: [Int: [String]] = [:] // Dictionary to store matched show IDs and matched friend IDs
+        var matchedShowIDs: [Int: [String]] = [:]
         let dispatchGroup = DispatchGroup()
         
         for friendID in friendIDs {
@@ -116,7 +119,7 @@ struct tvMatchView: View {
                     print("Friend data not found or liked items not available.")
                     return
                 }
-                // Compare liked shows of user and friend to find matches
+                
                 for showID in friendLikedItems {
                     if likedItems.contains(showID) {
                         if matchedShowIDs[showID] == nil {
@@ -138,7 +141,7 @@ struct tvMatchView: View {
             var processedShows = 0
 
             for (showID, matchedFriendIDs) in matchedShowIDs {
-                if matchedFriendIDs.contains(userId) { // Filter matches by userId
+                if matchedFriendIDs.contains(userId) {
                     fetchShowDetail(for: showID, matchedFriendIDs: matchedFriendIDs) {
                         processedShows += 1
                         if processedShows == totalShows {
@@ -156,7 +159,7 @@ struct tvMatchView: View {
     }
 
     private func fetchShowDetail(for showID: Int, matchedFriendIDs: [String], completion: @escaping () -> Void) {
-        let apiKey = "009613fd608f174b8bde1c5e00e56640"
+        let apiKey = "" // tmdb api key goes here
         let urlString = "https://api.themoviedb.org/3/tv/\(showID)?api_key=\(apiKey)&language=en-US"
         guard let url = URL(string: urlString) else {
                     print("Invalid URL")
@@ -170,13 +173,22 @@ struct tvMatchView: View {
                             let decoder = JSONDecoder()
                             var showDetail = try decoder.decode(ShowDetails.self, from: data)
                             
-                            // Extract the poster path from the JSON dictionary
+                            
                             let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                             if let posterPath = jsonResponse?["poster_path"] as? String {
                                 showDetail.posterPath = posterPath
                             }
+                            if let firstAirDate = jsonResponse?["first_air_date"] as? String {
+                                                showDetail.firstAirDate = firstAirDate
+                                            }
+                            if let voteAverage = jsonResponse?["vote_average"] as? Double {
+                                showDetail.voteAverage = voteAverage
+                            }
+                            if let ageRating = jsonResponse?["certification"] as? String {
+                                showDetail.ageRating = ageRating
+                            }
                             
-                            // Add matched friend's username to show detail
+                            
                             let dispatchGroup = DispatchGroup()
                             for friendID in matchedFriendIDs {
                                 dispatchGroup.enter()
@@ -229,6 +241,7 @@ struct tvMatchView: View {
         struct ShowDetailView: View {
             let show: ShowDetails
             
+            
             var body: some View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -269,6 +282,35 @@ struct tvMatchView: View {
                             .font(.title)
                             .padding(.top)
                             .foregroundColor(.white)
+                        
+                        HStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text("Score: \(show.voteAverage ?? 0.0, specifier: "%.1f")")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text("\(show.firstAirDate ?? "Release Date Not Found")")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(height: 30)
+                                .overlay(
+                                    Text(" \(show.ageRating ?? "Age Rating Not Found")")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                )
+                        }
+                        .padding(.top)
                         
                         Text(show.overview)
                             .foregroundColor(.white)

@@ -10,7 +10,7 @@ struct UserProfileView: View {
     @State private var showImagePicker = false
     @State private var selectedImage: UIImage?
     @State private var isUploading = false
-    @State private var showDeleteAccountAlert = false // New state variable
+    @State private var showDeleteAccountAlert = false 
     @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
     var body: some View {
             ZStack {

@@ -8,15 +8,18 @@ struct MovieDetails: Codable {
     let overview: String
     var posterPath: String?
     var matchedFriendUsername: String?
+    var ReleaseDate: String?
+    var voteAverage: Double?
+    var ageRating: String?
 }
 
 struct MovieMatchView: View {
     var userId: String
-    @State private var userID: String? // User's ID
-    @State private var friendIDs: [String]? // IDs of the user's friends
+    @State private var userID: String?
+    @State private var friendIDs: [String]?
     @State private var matchedMovies: [MovieDetails] = []
     @State private var isLoading = false
-    @State private var hasFetchedData = false // New state to prevent multiple fetches
+    @State private var hasFetchedData = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -41,6 +44,7 @@ struct MovieMatchView: View {
                     }
                 }
             }
+            .padding(.top,isIPad ? geometry.size.height * 0.10 : 0)
             .frame(
                 width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
                 height: isIPad ? geometry.size.height * 0.8 : geometry.size.height
@@ -53,7 +57,7 @@ struct MovieMatchView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
-            if !hasFetchedData { // Ensure fetchUserData is called only once
+            if !hasFetchedData {
                 fetchUserData()
                 hasFetchedData = true
             }
@@ -86,7 +90,6 @@ struct MovieMatchView: View {
             self.userID = userID
             self.friendIDs = userData["friends"] as? [String]
             
-            // Find matched movies
             if let likedItems = userData["likedMovies"] as? [Int], let friendIDs = self.friendIDs {
                 findMatchedMovies(userID: userID, likedItems: likedItems, friendIDs: friendIDs) {
                     self.isLoading = false
@@ -98,7 +101,7 @@ struct MovieMatchView: View {
     }
     
     private func findMatchedMovies(userID: String, likedItems: [Int], friendIDs: [String], completion: @escaping () -> Void) {
-        var matchedMovieIDs: [Int: [String]] = [:] // Dictionary to store matched movie IDs and matched friend IDs
+        var matchedMovieIDs: [Int: [String]] = [:]
         let dispatchGroup = DispatchGroup()
         
         for friendID in friendIDs {
@@ -116,7 +119,7 @@ struct MovieMatchView: View {
                     print("Friend data not found or liked items not available.")
                     return
                 }
-                // Compare liked movies of user and friend to find matches
+                
                 for movieID in friendLikedItems {
                     if likedItems.contains(movieID) {
                         if matchedMovieIDs[movieID] == nil {
@@ -138,7 +141,7 @@ struct MovieMatchView: View {
             var processedMovies = 0
 
             for (movieID, matchedFriendIDs) in matchedMovieIDs {
-                if matchedFriendIDs.contains(userId) { // Filter matches by userId
+                if matchedFriendIDs.contains(userId) {
                     fetchMovieDetail(for: movieID, matchedFriendIDs: matchedFriendIDs) {
                         processedMovies += 1
                         if processedMovies == totalMovies {
@@ -156,7 +159,7 @@ struct MovieMatchView: View {
     }
 
     private func fetchMovieDetail(for movieID: Int, matchedFriendIDs: [String], completion: @escaping () -> Void) {
-        let apiKey = "009613fd608f174b8bde1c5e00e56640"
+        let apiKey = "" // tmdb api key goes here
         let urlString = "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US"
         
         guard let url = URL(string: urlString) else {
@@ -171,13 +174,22 @@ struct MovieMatchView: View {
                     let decoder = JSONDecoder()
                     var movieDetail = try decoder.decode(MovieDetails.self, from: data)
                     
-                    // Extract the poster path from the JSON dictionary
+                    
                     let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if let posterPath = jsonResponse?["poster_path"] as? String {
                         movieDetail.posterPath = posterPath
                     }
+                    if let ReleaseDate = jsonResponse?["release_date"] as? String {
+                                        movieDetail.ReleaseDate = ReleaseDate
+                                    }
+                    if let voteAverage = jsonResponse?["vote_average"] as? Double {
+                        movieDetail.voteAverage = voteAverage
+                    }
+                    if let ageRating = jsonResponse?["certification"] as? String {
+                        movieDetail.ageRating = ageRating
+                    }
                     
-                    // Add matched friend's username to movie detail
+                    
                     let dispatchGroup = DispatchGroup()
                     for friendID in matchedFriendIDs {
                         dispatchGroup.enter()
@@ -230,6 +242,8 @@ struct MovieMatchView: View {
 struct MovieDetailView: View {
     let movie: MovieDetails
     
+    @State private var isExpanded = false
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
@@ -271,11 +285,46 @@ struct MovieDetailView: View {
                     .padding(.top)
                     .foregroundColor(.white)
                 
+                HStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 30)
+                        .overlay(
+                            Text("Score: \(movie.voteAverage ?? 0.0, specifier: "%.1f")")
+                                .foregroundColor(.white)
+                                .font(.subheadline)
+                        )
+
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 30)
+                        .overlay(
+                            Text("\(movie.ReleaseDate ?? "Release Date Not Found")")
+                                .foregroundColor(.white)
+                                .font(.subheadline)
+                        )
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 30)
+                        .overlay(
+                            Text(" \(movie.ageRating ?? "Age Rating Not Found")")
+                                .foregroundColor(.white)
+                                .font(.subheadline)
+                        )
+                }
+                .padding(.top)
+                
                 Text(movie.overview)
                     .foregroundColor(.white)
                     .font(.body)
                     .padding()
-                    .lineLimit(nil)
+                    .lineLimit(isExpanded ? nil : 5)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation {
+                            isExpanded.toggle()
+                        }
+                    }
                 
 
             }

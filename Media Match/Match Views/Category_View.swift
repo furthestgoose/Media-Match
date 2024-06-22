@@ -3,15 +3,14 @@ import FirebaseFirestore
 
 struct Category_View: View {
     var userId: String
-    @State private var username = "Loading..." // State variable to hold the username
+    @State private var username = "Loading..."
     
     var body: some View {
         VStack {
-            Text("Matches with \(username)") // Display the username
+            Text("Matches with \(username)")
                 .font(.title)
                 .padding(.top, 20)
                 .onAppear {
-                    // Fetch the username when the view appears
                     fetchUsername(for: userId) { fetchedUsername in
                         self.username = fetchedUsername
                     }
@@ -43,12 +42,11 @@ struct Category_View: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color.white)
             .cornerRadius(16)
             .shadow(radius: 4)
             .padding()
             
-            Spacer() // Spacer to push the buttons to the bottom
+            Spacer()
             
             
         }

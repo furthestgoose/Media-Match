@@ -1,9 +1,3 @@
-//
-//  Friend.swift
-//  Media Match
-//
-//  Created by Adam Byford on 02/06/2024.
-//
 
 import Foundation
 

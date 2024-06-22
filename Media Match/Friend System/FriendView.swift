@@ -35,7 +35,7 @@ struct FriendView: View {
     @State private var exists: Bool = true
     @State private var incomingRequests: [UserProfile] = []
     @State private var outgoingRequests: [UserProfile] = []
-    @State private var friends: [UserProfile] = [] // Add this line
+    @State private var friends: [UserProfile] = []
     @State private var isLoading: Bool = false
     @State private var currentUserProfile: UserProfile?
     @StateObject private var friendViewModel = FriendViewModel()
@@ -59,10 +59,10 @@ struct FriendView: View {
                                 .listRowInsets(EdgeInsets())
                                 .listRowBackground(Color.clear)
                                 .onChange(of: friendSearch) { searchText in
-                                    if !searchText.isEmpty { // Only perform search when text is not empty
+                                    if !searchText.isEmpty {
                                         searchForFriend()
                                     } else {
-                                        exists = true // Reset exists when text is empty
+                                        exists = true
                                     }
                                 }
 
@@ -77,7 +77,6 @@ struct FriendView: View {
                     }
 
                     if isFriendFound, let profile = foundUserProfile, let currentUserProfile = currentUserProfile {
-                        // Display friend profile
                         Section(header: Text("User Found")) {
                             HStack {
                                 if let imageUrl = profile.profilePictureURL, let url = URL(string: imageUrl), !imageUrl.isEmpty {
@@ -194,7 +193,6 @@ struct FriendView: View {
                         }
                     }
 
-                    // Add this section to display the list of friends
                     Section(header: Text("Friends")) {
                         if friends.isEmpty {
                             Text("No friends yet")
@@ -256,7 +254,7 @@ struct FriendView: View {
         .onAppear {
             loadFriendRequests()
             loadCurrentUserProfile()
-            loadFriends() // Add this line to load friends when the view appears
+            loadFriends()
         }
         .onReceive(friendViewModel.$incomingRequests) { incomingRequests in
             self.incomingRequests = incomingRequests
@@ -264,7 +262,7 @@ struct FriendView: View {
         .onReceive(friendViewModel.$outgoingRequests) { outgoingRequests in
             self.outgoingRequests = outgoingRequests
         }
-        .onReceive(friendViewModel.$friends) { friends in // Add this line to update friends list
+        .onReceive(friendViewModel.$friends) { friends in
             self.friends = friends
         }
         .overlay(
@@ -322,7 +320,6 @@ struct FriendView: View {
         }
     }
 
-    // Add this method to load friends
     func loadFriends() {
         friendViewModel.loadFriends()
     }

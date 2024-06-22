@@ -1,9 +1,3 @@
-//
-//  FeatureView.swift
-//  Media Match
-//
-//  Created by Adam Byford on 03/06/2024.
-//
 
 import SwiftUI
 

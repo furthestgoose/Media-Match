@@ -1,16 +1,13 @@
-//
-//  MainView.swift
-//  Media Match
-//
-//  Created by Adam Byford on 02/06/2024.
-//
-
 import SwiftUI
 import Network
+import GoogleMobileAds
 
 struct MainView: View {
     @ObservedObject private var networkMonitor = NetworkMonitor()
     var body: some View {
+        VStack(spacing: 0) {
+            AdBannerViewController()
+                            .frame(height: 100)
             TabView {
                 HomeView()
                     .tabItem {
@@ -18,7 +15,7 @@ struct MainView: View {
                     }
                     .toolbarBackground(.visible, for: .tabBar)
                     .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                       startPoint: .leading,
+                                                      startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
                 FriendView()
                     .tabItem {
@@ -26,7 +23,7 @@ struct MainView: View {
                     }
                     .toolbarBackground(.visible, for: .tabBar)
                     .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                       startPoint: .leading,
+                                                      startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
                 Match_Home_View()
                     .tabItem {
@@ -34,12 +31,13 @@ struct MainView: View {
                     }
                     .toolbarBackground(.visible, for: .tabBar)
                     .toolbarBackground(LinearGradient(gradient: Gradient(colors: [Color.gradientTop, Color.gradientBottom]),
-                                                       startPoint: .leading,
+                                                      startPoint: .leading,
                                                       endPoint: .trailing).opacity(0.8), for: .tabBar)
             }
             .disabled(!networkMonitor.isConnected)
             .noInternetOverlay()
         }
+    }
         
 }
 

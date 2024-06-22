@@ -1,4 +1,4 @@
-// FriendService.swift
+
 
 import Foundation
 import FirebaseAuth
@@ -9,7 +9,6 @@ class FriendService {
 
     private init() {}
 
-    // MARK: - Constants
     private let userProfilesCollection = "userProfiles"
     private let friendRequestsCollection = "friendRequests"
     private let sentSubcollection = "sent"
@@ -26,7 +25,6 @@ class FriendService {
 
         userProfileRef.getDocument { snapshot, error in
             if let error = error {
-                print("Error fetching user profile: \(error.localizedDescription)")
                 completion([])
                 return
             }
@@ -102,7 +100,6 @@ class FriendService {
             if let error = error {
                 completion(error)
             } else {
-                // Call deleteRequest after the transaction completes successfully
                 self.deleteRequest(for: userId)
                 completion(nil)
             }
@@ -117,31 +114,25 @@ class FriendService {
 
     func deleteRequest(for userId: String) {
         guard let currentUser = Auth.auth().currentUser else {
-            print("No user signed in")
             return
         }
 
         let db = Firestore.firestore()
         
-        // Access the documents in the "friendRequests" collection where the receiverUserID is the current user
         let requestRef = db.collection(friendRequestsCollection)
             .document(userId)
             .collection(sentSubcollection)
             .whereField("receiverUserID", isEqualTo: currentUser.uid)
         
-        // Get the documents matching the query
         requestRef.getDocuments { (snapshot, error) in
             if let error = error {
-                print("Error fetching friend requests: \(error.localizedDescription)")
                 return
             }
 
             guard let documents = snapshot?.documents else {
-                print("No friend requests found to delete")
                 return
             }
 
-            // Iterate over the documents and delete each one
             for document in documents {
                 document.reference.delete { error in
                     if let error = error {
@@ -164,20 +155,20 @@ class FriendService {
         let friendRef = db.collection(userProfilesCollection).document(userId)
         let userRef = db.collection(userProfilesCollection).document(currentUser.uid)
         
-        let dispatchGroup = DispatchGroup() // Create a Dispatch Group
+        let dispatchGroup = DispatchGroup()
 
-        dispatchGroup.enter() // Enter the Dispatch Group before the first update
+        dispatchGroup.enter()
         friendRef.updateData(["friends": FieldValue.arrayRemove([currentUser.uid])]) { error in
-            dispatchGroup.leave() // Leave the Dispatch Group after the first update completes
+            dispatchGroup.leave()
             if let error = error {
                 completion(error)
                 return
             }
         }
 
-        dispatchGroup.enter() // Enter the Dispatch Group before the second update
+        dispatchGroup.enter()
         userRef.updateData(["friends": FieldValue.arrayRemove([userId])]) { error in
-            dispatchGroup.leave() // Leave the Dispatch Group after the second update completes
+            dispatchGroup.leave()
             if let error = error {
                 completion(error)
                 return
@@ -185,7 +176,6 @@ class FriendService {
         }
 
         dispatchGroup.notify(queue: .main) {
-            // Call the completion block only once after both updates have completed
             completion(nil)
         }
     }
@@ -193,7 +183,6 @@ class FriendService {
     // MARK: - Load Requests
     func loadOutgoingRequests(completion: @escaping ([UserProfile]) -> Void) {
         guard let currentUser = Auth.auth().currentUser else {
-            print("No user signed in.")
             completion([])
             return
         }
@@ -209,12 +198,10 @@ class FriendService {
             }
 
             guard let documents = snapshot?.documents else {
-                print("No outgoing friend requests found.")
                 completion([])
                 return
             }
             
-            print("Outgoing requests documents count:", documents.count)
 
             let dispatchGroup = DispatchGroup()
             var profiles: [UserProfile] = []
@@ -249,7 +236,6 @@ class FriendService {
 
         incomingRequestsRef.getDocuments { snapshot, error in
             if let error = error {
-                print("Error fetching incoming friend requests: \(error.localizedDescription)")
                 completion([])
                 return
             }
@@ -290,7 +276,6 @@ class FriendService {
 
         userProfileRef.getDocument { snapshot, error in
             if let error = error {
-                print("Error fetching user profile: \(error.localizedDescription)")
                 completion(nil)
                 return
             }

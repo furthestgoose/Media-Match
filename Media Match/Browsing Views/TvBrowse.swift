@@ -204,17 +204,14 @@ struct TvBrowse: View {
                                         .onEnded { value in
                                             withAnimation(.spring()) {
                                                 if value.translation.width > 100 {
-                                                    // Swipe right
                                                     offset = CGSize(width: 500, height: 0)
                                                     handleSwipeRight(for: card)
                                                     removeCard()
                                                 } else if value.translation.width < -100 {
-                                                    // Swipe left
                                                     offset = CGSize(width: -500, height: 0)
                                                     handleSwipeLeft(for: card)
                                                     removeCard()
                                                 } else {
-                                                    // Reset card position
                                                     offset = .zero
                                                     rotation = 0
                                                 }
@@ -223,6 +220,7 @@ struct TvBrowse: View {
                                 )
                             }
                         }
+                        .padding(.top,isIPad ? 0 : geometry.size.height * 0.15)
                         .frame(
                             width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
                             height: isIPad ? geometry.size.height * 0.8 : geometry.size.height,
@@ -244,7 +242,6 @@ struct TvBrowse: View {
                     }
                 }
             .frame(width: geometry.size.width, height: geometry.size.height)
-                        .background(Color.white)
                         .ignoresSafeArea()
             .toolbar {
                 
@@ -663,7 +660,7 @@ struct TvBrowse: View {
             let likedShowIDSet = Set(likedShowIDs)
             let dislikedShowIDSet = Set(dislikedShowIDs)
 
-            let apiKey = "009613fd608f174b8bde1c5e00e56640"
+            let apiKey = "" // tmdb api key goes here
             let urlString = "https://api.themoviedb.org/3/discover/tv"
 
             var parameters: [String: Any] = [
@@ -729,7 +726,7 @@ struct TvBrowse: View {
     }
     
     private func fetchShowDetails(showIDs: [Int], completion: @escaping ([Show]) -> Void) {
-                let apiKey = "009613fd608f174b8bde1c5e00e56640"
+                let apiKey = "" // tmdb api key goes here
                 let baseURL = "https://api.themoviedb.org/3/tv/"
                 let parameters: [String: Any] = [
                     "api_key": apiKey,
@@ -943,7 +940,6 @@ struct TvShowCardView: View {
         .frame(maxWidth: 400, maxHeight: 700)
     }
 }
-                            // TMDB response structs
 
                             struct ShowResponse: Codable {
                                 let results: [Show]

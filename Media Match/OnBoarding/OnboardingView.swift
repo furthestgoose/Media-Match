@@ -22,7 +22,7 @@ struct OnboardingView: View {
                     })
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-            .padding(.bottom, 40) // Add padding to the bottom to push the dots up
+            .padding(.bottom, 40)
         }
         .edgesIgnoringSafeArea(.all)
     }

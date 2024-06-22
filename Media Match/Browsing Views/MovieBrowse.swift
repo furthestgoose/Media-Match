@@ -204,17 +204,14 @@ struct MovieBrowse: View {
                                     .onEnded { value in
                                         withAnimation(.spring()) {
                                             if value.translation.width > 100 {
-                                                // Swipe right
                                                 offset = CGSize(width: 500, height: 0)
                                                 handleSwipeRight(for: card)
                                                 removeCard()
                                             } else if value.translation.width < -100 {
-                                                // Swipe left
                                                 offset = CGSize(width: -500, height: 0)
                                                 handleSwipeLeft(for: card)
                                                 removeCard()
                                             } else {
-                                                // Reset card position
                                                 offset = .zero
                                                 rotation = 0
                                             }
@@ -223,6 +220,7 @@ struct MovieBrowse: View {
                             )
                         }
                     }
+                    .padding(.top,isIPad ? 0 : geometry.size.height * 0.15)
                     .frame(
                                             width: isIPad ? geometry.size.width * 0.8 : geometry.size.width,
                                             height: isIPad ? geometry.size.height * 0.8 : geometry.size.height,
@@ -244,7 +242,6 @@ struct MovieBrowse: View {
                 }
             }
         .frame(width: geometry.size.width, height: geometry.size.height)
-                    .background(Color.white)
                     .ignoresSafeArea()
             .toolbar {
                 
@@ -669,7 +666,7 @@ struct MovieBrowse: View {
             let likedMovieIDSet = Set(likedMovieIDs)
             let dislikedMovieIDSet = Set(dislikedMovieIDs)
 
-            let apiKey = "009613fd608f174b8bde1c5e00e56640"
+            let apiKey = "" // tmdb api key goes here
             let urlString = "https://api.themoviedb.org/3/discover/movie"
 
             var parameters: [String: Any] = [
@@ -734,7 +731,7 @@ struct MovieBrowse: View {
         }
     }
     private func fetchMovieDetails(movieIDs: [Int], completion: @escaping ([Movie]) -> Void) {
-        let apiKey = "009613fd608f174b8bde1c5e00e56640"
+        let apiKey = "" // tmdb api key goes here
         let baseURL = "https://api.themoviedb.org/3/movie/"
         let parameters: [String: Any] = [
             "api_key": apiKey,
@@ -774,8 +771,6 @@ struct MovieBrowse: View {
                             if let releaseDatesData = releaseDatesData {
                                 do {
                                     let releaseDatesResponse = try JSONDecoder().decode(ReleaseDatesResponse.self, from: releaseDatesData)
-                                    
-                                    // Find the age rating for the US region
                                     if let usReleaseDate = releaseDatesResponse.results.first(where: { $0.iso31661 == "GB" }),
                                        let usRelease = usReleaseDate.releaseDates.first(where: { $0.certification != nil }),
                                        let certification = usRelease.certification {
@@ -976,8 +971,6 @@ struct MovieCardView: View {
         .frame(maxWidth: 400, maxHeight: 700)
     }
 }
-
-// TMDB response structs
 
 struct MovieResponse: Codable {
     let results: [Movie]

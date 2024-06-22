@@ -13,6 +13,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-5980679007512919~7038768521</string>
 	<key>NSAppTransportSecurity</key>
 	<dict/>
 </dict>

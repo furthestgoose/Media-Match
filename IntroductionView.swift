@@ -4,7 +4,7 @@ struct IntroductionView: View {
     var onDismiss: () -> Void
     
     var body: some View {
-        Color.white.opacity(0.8) // Background color with opacity
+        Color.white.opacity(0.8)
             .overlay(
                 ZStack {
                     HStack {
@@ -15,7 +15,7 @@ struct IntroductionView: View {
                             .font(.body)
                             .foregroundColor(.black)
                         Divider()
-                            .frame(width: 1, height: .infinity) // Vertical divider
+                            .frame(width: 1, height: .infinity)
                         .background(Color.black)
                         .padding()
                         Text("Swipe Right to Like")
